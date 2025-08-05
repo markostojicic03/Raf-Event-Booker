@@ -6,7 +6,8 @@
                                  http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
 
     <persistence-unit name="eventBookerPU" transaction-type="RESOURCE_LOCAL">
-        <class>rs.raf.backend.model.UserModel</class> <!-- OVO MORAŠ DODATI za svaki entitet! -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>rs.raf.backend.model.UserModel</class>
 
         <properties>
             <!-- JDBC -->
