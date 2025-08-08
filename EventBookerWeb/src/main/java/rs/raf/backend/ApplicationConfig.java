@@ -16,7 +16,6 @@ public class ApplicationConfig extends ResourceConfig {
 
 
     public ApplicationConfig() {
-        // Registruj pakete gde su resursi
         packages("rs.raf.backend");
 
         // Dependency Injection

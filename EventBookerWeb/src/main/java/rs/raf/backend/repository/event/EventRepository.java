@@ -1,4 +1,15 @@
 package rs.raf.backend.repository.event;
 
+import rs.raf.backend.model.EventModel;
+
+import java.util.List;
+
 public interface EventRepository {
+    List<EventModel> findAll();
+    EventModel findById(Long id);
+    void save(EventModel event);
+    void delete(Long id);
+
+    // Nova metoda
+    List<EventModel> findLatest(int limit);
 }

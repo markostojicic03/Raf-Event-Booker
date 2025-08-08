@@ -1,35 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import NavigationBar from './components/NavigationBar';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { Spinner } from 'react-bootstrap';
+
+//Lazy load stranica
+// const HomePage = lazy(() => import('./pages/HomePage'));
+// const PopularPage = lazy(() => import('./pages/PopularPage'));
+// const CategoryPage = lazy(() => import('./pages/CategoryPage'));
+// const SearchResults = lazy(() => import('./pages/SearchResults'));
+// const EventDetails = lazy(() => import('./pages/EventDetails'));
+
+import HomePage from './pages/HomePage';
+import PopularPage from './pages/PopularPage';
+import CategoryPage from './pages/CategoryPage';
+import SearchResults from './pages/SearchResults';
+import EventDetails from './pages/EventDetails';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentDate, setCurrentDate] = useState('');
+
+  useEffect(() => {
+    const date = new Date();
+    const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(
+      date.getMonth() + 1
+    ).padStart(2, '0')}.${date.getFullYear()}`;
+    setCurrentDate(formattedDate);
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vitebre + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <Router>
+        <NavigationBar />
+        <main className="main-content">
+          <Suspense
+            fallback={
+              <div className="spinner-container">
+                <Spinner animation="border" role="status" />
+              </div>
+            }
+          >
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/popular" element={<PopularPage />} />
+              <Route path="/category/:categoryId" element={<CategoryPage />} />
+              <Route path="/search/:query" element={<SearchResults />} />
+              <Route path="/event/:eventId" element={<EventDetails />} />
+            </Routes>
+          </Suspense>
+        </main>
+      </Router>
+      <footer className="footer">
+        <p>Računarski Fakultet</p>
+        <p>{currentDate}</p>
+      </footer>
+    </div>
+  );
 }
 
-export default App
+export default App;
