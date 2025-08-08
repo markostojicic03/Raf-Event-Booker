@@ -20,6 +20,7 @@ public class EventResource {
     // Vrati sve događaje
     @GET
     public List<EventModel> getAllEvents() {
+        System.out.println("getAllEvents");
         return eventService.getAllEvents();
     }
 

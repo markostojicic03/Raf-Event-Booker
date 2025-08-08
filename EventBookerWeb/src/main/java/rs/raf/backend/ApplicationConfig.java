@@ -17,6 +17,7 @@ public class ApplicationConfig extends ResourceConfig {
 
     public ApplicationConfig() {
         packages("rs.raf.backend");
+        register(rs.raf.backend.filth.Cors.class);
 
         // Dependency Injection
         register(new AbstractBinder() {

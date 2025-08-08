@@ -1,6 +1,7 @@
 package rs.raf.backend.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,6 +14,8 @@ import java.util.Set;
 @Table(name = "event_model")
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class EventModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +28,10 @@ public class EventModel {
     private String description; // Opis
 
     @Column(nullable = false)
-    private LocalDateTime createdAt; // Vreme kreiranja
+    private String createdAt; // Vreme kreiranja
 
     @Column(nullable = false)
-    private LocalDateTime eventDate; // Datum održavanja
+    private String eventDate; // Datum održavanja
 
     @Column(nullable = false)
     private String location; // Lokacija
@@ -54,7 +57,7 @@ public class EventModel {
     public EventModel() {
     }
 
-    public EventModel(String title, String description, LocalDateTime createdAt, LocalDateTime eventDate,
+    public EventModel(String title, String description, String createdAt, String eventDate,
                  String location, UserModel author, CategoryModel category, Integer maxCapacity) {
         this.title = title;
         this.description = description;
