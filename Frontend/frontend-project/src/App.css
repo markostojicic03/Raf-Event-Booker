@@ -1,27 +1,48 @@
-.App {
+/* 1️⃣  Main wrapper – stretches to fill available height */
+.main-content {
+  flex: 1 0 auto;        /* pushes footer down */
+  padding: 40px 20px;
   text-align: center;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
-.app-container {
-  flex: 1;
+/* 2️⃣  Navbar – full-width dark bar, items centered */
+.navbar {
+  width: 100%;
+  background: #343a40;
+  justify-content: center !important;
 }
 
-.main-content {
-  padding: 20px;
+.navbar-brand {
+  margin-right: auto;
+  font-weight: bold;
+  color: #fff !important;
 }
 
-.spinner-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 50px;
+.navbar-nav {
+  margin-left: auto;
+  margin-right: auto;
+  gap: 20px;
 }
 
+/* 3️⃣  Footer – pinned to bottom */
 .footer {
+  flex-shrink: 0;
   background-color: #f8f8f8;
   padding: 15px;
-  margin-top: auto;
   border-top: 1px solid #ddd;
+  width: 100%;
+  text-align: center;
+}
+
+/* 4️⃣  Responsive grid for event cards */
+.event-grid {
+  display: flex;              /* 1️⃣ flex instead of grid */
+  flex-direction: column;     /* 2️⃣ stack vertically */
+  gap: 24px;                  /* keeps the spacing */
+  width: 100%;
+  max-width: 800px;           /* optional – limits width on large screens */
+  margin: 0 auto;
 }

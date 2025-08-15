@@ -1,37 +1,37 @@
 import { useEffect, useState } from "react";
-import _axios from "../axiosInstance"; // Axios instanca
+import { useNavigate } from "react-router-dom"; // if you use React-Router
+import _axios from "../axiosInstance";
+import "../pages_css/HomePageCss.css";
 
 export default function HomePage() {
-    const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();      // only if you navigate elsewhere
 
-    useEffect(() => {
-        _axios.get("/events") // GET http://localhost:8080/events
-            .then((response) => {
-                setEvents(response.data); // response.data je ono što backend vraća
-            })
-            .catch((error) => {
-                console.error("Greška pri dohvatanju eventova:", error);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, []);
+  useEffect(() => {
+    _axios.get("/events")
+      .then(res => setEvents(res.data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
 
-    if (loading) {
-        return <p>Učitavanje...</p>;
-    }
+  if (loading) return <p className="loading">Učitavanje...</p>;
 
-    return (
-        <div>
-            <h1>Lista događaja</h1>
-            <ul>
-                {events.map(event => (
-                    <li key={event.id}>
-                        {event.title} — {event.location}
-                    </li>
-                ))}
-            </ul>
+  return (
+    <div className="event-grid">
+      {events.map(ev => (
+        <div
+          key={ev.id}
+          className="event-card"
+          onClick={() => navigate(`/events/${ev.id}`)} // or any route you have
+        >
+          <h3>{ev.title}</h3>
+          <p><strong>Lokacija: {ev.location}</strong></p>
+          <p><strong>Opis: {ev.description.length > 200 ? `${ev.description.slice(0, 200)}…` : ev.description}</strong></p>
+          <p><strong>Kategorija: {ev.category?.categoryName}</strong></p>
+          <p>Datum objave: {new Date(ev.eventDate).toLocaleDateString("sr-RS")}</p>
         </div>
-    );
+      ))}
+    </div>
+  );
 }

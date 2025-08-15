@@ -48,9 +48,9 @@ public class EventModel {
     @Column(name = "tag")
     private Set<String> tags = new HashSet<>(); // Tagovi
 
-//    @ManyToOne(fetch = FetchType.LAZY) // Veza sa kategorijom
-//    @JoinColumn(name = "category_id", nullable = false)
-//    private CategoryModel category;
+    @ManyToOne(fetch = FetchType.LAZY) // Veza sa kategorijom
+    @JoinColumn(name = "category_id", nullable = false)
+    private CategoryModel category;
 
     private Integer maxCapacity; // Max kapacitet (opciono)
 
@@ -65,7 +65,7 @@ public class EventModel {
         this.eventDate = eventDate;
         this.location = location;
         this.author = author;
-      //  this.category = category;
+        this.category = category;
         this.maxCapacity = maxCapacity;
         this.views = 0;
     }
