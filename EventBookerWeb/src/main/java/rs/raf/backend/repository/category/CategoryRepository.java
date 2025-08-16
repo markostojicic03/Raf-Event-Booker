@@ -8,6 +8,7 @@ import java.util.List;
 public interface CategoryRepository {
     List<CategoryModel> findAll();
     CategoryModel findById(Long id);
+    List<CategoryModel> findAllCategoriesById(Long id);
     CategoryModel searchByName(String name);
     void save(CategoryModel category);
     void delete(Long id);

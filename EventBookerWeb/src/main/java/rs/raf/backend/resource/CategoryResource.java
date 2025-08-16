@@ -38,6 +38,11 @@ public class CategoryResource {
         }
         return Response.ok(category).build();
     }
+    @GET
+    @Path("/all/{id}")
+    public List<CategoryModel> getAllCategoriesById(@PathParam("id")  Long id) {
+        return categoryService.getAllCategoriesById(id);
+    }
 
     @POST
     public Response createCategory(CategoryModel category) {

@@ -1,15 +1,24 @@
 import { Navbar, Nav, Container, Form, FormControl, Button, NavDropdown } from 'react-bootstrap';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import _axios from "../axiosInstance";
 
 const NavigationBar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [categories, setCategories] = useState([]);
+
+  // fetch categories once on mount
+  useEffect(() => {
+    _axios.get('/category')          // <-- your endpoint
+      .then(res => setCategories(res.data))
+      .catch(console.error);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim() !== '') {
+    if (searchQuery.trim()) {
       navigate(`/search/${searchQuery}`);
       setSearchQuery('');
     }
@@ -25,16 +34,20 @@ const NavigationBar = () => {
             <Nav.Link as={Link} to="/" className={location.pathname === "/" ? "active" : ""}>Početna</Nav.Link>
             <Nav.Link as={Link} to="/popular" className={location.pathname === "/popular" ? "active" : ""}>Najposećeniji</Nav.Link>
 
-            {/* Dinamička ili statička lista kategorija */}
+            {/* Dynamic category dropdown */}
             <NavDropdown title="Kategorije" id="category-dropdown">
-              <NavDropdown.Item as={Link} to="/category/1">Kultura</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/category/2">Tehnologija</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/category/3">Muzika</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/category/4">Sport</NavDropdown.Item>
+              {categories.map(cat => (
+                <NavDropdown.Item
+                  key={cat.id}
+                  as={Link}
+                  to={`/category/${cat.id}`}
+                >
+                  {cat.categoryName}
+                </NavDropdown.Item>
+              ))}
             </NavDropdown>
           </Nav>
 
-          {/* Pretraga */}
           <Form className="d-flex" onSubmit={handleSearch}>
             <FormControl
               type="search"

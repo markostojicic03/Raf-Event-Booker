@@ -16,6 +16,10 @@ public class EventService {
     public List<EventModel> getAllEvents() {
         return eventRepository.findAll();
     }
+    public List<EventModel> getAllEventsByCategoryId(Long categoryId) {
+        return eventRepository.findAllByCategoryId(categoryId);
+    }
+
 
     public EventModel getEvent(Long id) {
         return eventRepository.findById(id);

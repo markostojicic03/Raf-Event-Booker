@@ -25,6 +25,13 @@ public class MySqlCategoryRepository implements CategoryRepository {
     }
 
     @Override
+    public List<CategoryModel> findAllCategoriesById(Long categoryId) {
+        TypedQuery<CategoryModel> query = em.createQuery("SELECT e FROM EventModel e WHERE e.category.id = :categoryId", CategoryModel.class);
+        query.setParameter("categoryId", categoryId);
+        return query.getResultList();
+    }
+
+    @Override
     public CategoryModel searchByName(String name) {
         TypedQuery<CategoryModel> query = em.createQuery(
                 "SELECT c FROM CategoryModel c WHERE LOWER(c.categoryName) = LOWER(:name)", CategoryModel.class);

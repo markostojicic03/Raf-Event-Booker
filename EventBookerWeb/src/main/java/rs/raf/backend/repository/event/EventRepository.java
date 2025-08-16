@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface EventRepository {
     List<EventModel> findAll();
+    List<EventModel> findAllByCategoryId(Long categoryId);
     EventModel findById(Long id);
     void save(EventModel event);
     void delete(Long id);

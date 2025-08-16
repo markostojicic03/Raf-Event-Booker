@@ -43,7 +43,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/popular" element={<PopularPage />} />
-              <Route path="/category/:categoryId" element={<CategoryPage />} />
+              <Route path="/category/:id" element={<CategoryPage />} />
               <Route path="/search/:query" element={<SearchResults />} />
               <Route path="/event/:eventId" element={<EventDetails />} />
             </Routes>

@@ -45,4 +45,8 @@ public class CategoryService {
         }
         return false;
     }
+    public List<CategoryModel> getAllCategoriesById(Long id) {
+        return categoryRepository.findAllCategoriesById(id);
+    }
+
 }

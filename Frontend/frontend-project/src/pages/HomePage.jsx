@@ -9,7 +9,7 @@ export default function HomePage() {
   const navigate = useNavigate();      // only if you navigate elsewhere
 
   useEffect(() => {
-    _axios.get("/events")
+    _axios.get("/events/latest")
       .then(res => setEvents(res.data))
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -29,7 +29,7 @@ export default function HomePage() {
           <p><strong>Lokacija: {ev.location}</strong></p>
           <p><strong>Opis: {ev.description.length > 200 ? `${ev.description.slice(0, 200)}…` : ev.description}</strong></p>
           <p><strong>Kategorija: {ev.category?.categoryName}</strong></p>
-          <p>Datum objave: {new Date(ev.eventDate).toLocaleDateString("sr-RS")}</p>
+          <p>Datum objave: {new Date(ev.createdAt).toLocaleDateString("sr-RS")}</p>
         </div>
       ))}
     </div>

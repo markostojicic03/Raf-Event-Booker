@@ -31,6 +31,14 @@ public class EventResource {
         return eventService.getEvent(id);
     }
 
+
+    @GET
+    @Path("/all/{id}")
+    public List<EventModel> getAllEventsByCategoryId(@PathParam("id") Long id) {
+        return eventService.getAllEventsByCategoryId(id);
+    }
+
+
     // Vrati 10 najskorijih događaja
     @GET
     @Path("/latest")

@@ -18,6 +18,15 @@ public class MySqlEventRepository implements EventRepository {
     }
 
     @Override
+    public List<EventModel> findAllByCategoryId(Long categoryId) {
+        return em.createQuery(
+                        "SELECT e FROM EventModel e WHERE e.category.id = :categoryId",
+                        EventModel.class)
+                .setParameter("categoryId", categoryId)   
+                .getResultList();
+    }
+
+    @Override
     public EventModel findById(Long id) {
         return em.find(EventModel.class, id);
     }
