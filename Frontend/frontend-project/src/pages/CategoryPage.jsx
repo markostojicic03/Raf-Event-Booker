@@ -9,7 +9,7 @@ export default function CategoryPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  console.log("CategoryPage rendered, id =", id);
+  //console.log("CategoryPage rendered, id =", id);
 
   useEffect(() => {
     if (!id) return;

@@ -22,7 +22,21 @@ public class MySqlEventRepository implements EventRepository {
         return em.createQuery(
                         "SELECT e FROM EventModel e WHERE e.category.id = :categoryId",
                         EventModel.class)
-                .setParameter("categoryId", categoryId)   
+                .setParameter("categoryId", categoryId)
+                .getResultList();
+    }
+
+    @Override
+    public List<EventModel> findAllBySearch(String querySearch) {
+        if (querySearch == null || querySearch.isBlank()) {
+            return List.of();
+        }
+
+        return em.createQuery(
+                        "SELECT e FROM EventModel e " +
+                                "WHERE LOWER(e.title) LIKE LOWER(CONCAT(:prefix, '%'))",
+                        EventModel.class)
+                .setParameter("prefix", querySearch.trim())
                 .getResultList();
     }
 

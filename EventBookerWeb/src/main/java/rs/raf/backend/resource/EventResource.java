@@ -38,6 +38,13 @@ public class EventResource {
         return eventService.getAllEventsByCategoryId(id);
     }
 
+    @GET
+    @Path("/search")
+    public List<EventModel> getAllEventsBySearch(@QueryParam("q")String querySearch) {
+        return eventService.getAllEventsBySearch(querySearch);
+    }
+
+
 
     // Vrati 10 najskorijih događaja
     @GET

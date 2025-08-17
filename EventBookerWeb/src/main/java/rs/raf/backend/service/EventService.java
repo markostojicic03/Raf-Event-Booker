@@ -20,6 +20,10 @@ public class EventService {
         return eventRepository.findAllByCategoryId(categoryId);
     }
 
+    public List<EventModel> getAllEventsBySearch(String querySearch) {
+        return eventRepository.findAllBySearch(querySearch);
+    }
+
 
     public EventModel getEvent(Long id) {
         return eventRepository.findById(id);

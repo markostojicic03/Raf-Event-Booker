@@ -44,7 +44,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/popular" element={<PopularPage />} />
               <Route path="/category/:id" element={<CategoryPage />} />
-              <Route path="/search/:query" element={<SearchResults />} />
+              <Route path="/search" element={<SearchResults />} />
               <Route path="/event/:eventId" element={<EventDetails />} />
             </Routes>
           </Suspense>
