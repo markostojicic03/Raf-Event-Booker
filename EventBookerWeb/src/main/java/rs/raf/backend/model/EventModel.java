@@ -57,6 +57,12 @@ public class EventModel {
 
     private Integer maxCapacity; // Max kapacitet (opciono)
 
+    @Column(nullable = false)
+    private Integer likes = 0;
+
+    @Column(nullable = false)
+    private Integer dislikes = 0;
+
     public EventModel() {
     }
 

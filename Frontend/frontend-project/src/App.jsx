@@ -45,7 +45,7 @@ function App() {
               <Route path="/popular" element={<PopularPage />} />
               <Route path="/category/:id" element={<CategoryPage />} />
               <Route path="/search" element={<SearchResults />} />
-              <Route path="/event/:eventId" element={<EventDetails />} />
+              <Route path="/events/:id" element={<EventDetails />} />
             </Routes>
           </Suspense>
         </main>

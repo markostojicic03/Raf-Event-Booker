@@ -52,8 +52,26 @@ public class EventService {
         eventRepository.delete(id);
     }
 
-    // Vrati najskorije događaje (limit možeš promeniti u pozivu)
+    public void save(EventModel e) { eventRepository.save(e); }
+
+
     public List<EventModel> getLatestEvents(int limit) {
         return eventRepository.findLatest(limit);
+    }
+
+    public void incrementViewCount(Long id) {
+        EventModel e = eventRepository.findById(id);
+        if (e != null) {
+            e.setViews(e.getViews() + 1);
+            eventRepository.save(e);   // merge
+        }
+    }
+
+    public void vote(Long id, String type) {
+        EventModel e = eventRepository.findById(id);
+        if (e == null) return;
+        if ("like".equals(type)) e.setLikes(e.getLikes() + 1);
+        else e.setDislikes(e.getDislikes() + 1);
+        eventRepository.save(e);
     }
 }

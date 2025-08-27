@@ -4,10 +4,13 @@ import { useNavigate } from 'react-router-dom';
 // Axios default config
 const config = {
     baseURL: 'http://localhost:8080/api', // Osnova URL-a na nasem backendu
+    
     timeout: 60000, // Timeout (opciono) koliko maksimalno cekamo odgovor
     headers: {
         'Content-Type': 'application/json', // Podrazumevani Content-Type
     },
+    
+    
 };
 
 // Kreiranje Axios instance
