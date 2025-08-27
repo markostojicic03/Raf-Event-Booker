@@ -3,8 +3,11 @@ package rs.raf.backend.resource;
 
 import rs.raf.backend.model.EventModel;
 import rs.raf.backend.repository.event.MySqlEventRepository;
+import rs.raf.backend.repository.tag.MySqlTagRepository;
+import rs.raf.backend.repository.user.MySqlUserRepository;
 import rs.raf.backend.service.EventService;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -15,7 +18,8 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class EventResource {
 
-    private EventService eventService = new EventService(new MySqlEventRepository());
+
+    private final EventService eventService = new EventService(new MySqlEventRepository(), new MySqlTagRepository());
 
     // Vrati sve događaje
     @GET
@@ -43,8 +47,6 @@ public class EventResource {
     public List<EventModel> getAllEventsBySearch(@QueryParam("q")String querySearch) {
         return eventService.getAllEventsBySearch(querySearch);
     }
-
-
 
     // Vrati 10 najskorijih događaja
     @GET

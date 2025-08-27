@@ -3,6 +3,10 @@ package rs.raf.backend;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
+import rs.raf.backend.repository.event.EventRepository;
+import rs.raf.backend.repository.event.MySqlEventRepository;
+import rs.raf.backend.repository.tag.MySqlTagRepository;
+import rs.raf.backend.repository.tag.TagRepository;
 import rs.raf.backend.repository.user.MySqlUserRepository;
 import rs.raf.backend.repository.user.UserRepository;
 import rs.raf.backend.service.UserService;
@@ -25,6 +29,9 @@ public class ApplicationConfig extends ResourceConfig {
             protected void configure() {
                 bind(MySqlUserRepository.class).to(UserRepository.class).in(Singleton.class);
                 bindAsContract(UserService.class);
+                bind(MySqlEventRepository.class).to(EventRepository.class).in(Singleton.class);
+                bind(MySqlTagRepository.class).to(TagRepository.class).in(Singleton.class);
+
             }
         });
     }

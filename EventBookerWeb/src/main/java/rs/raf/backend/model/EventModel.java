@@ -43,10 +43,13 @@ public class EventModel {
     @JoinColumn(name = "author_id", nullable = false)
     private UserModel author;
 
-    @ElementCollection
-    @CollectionTable(name = "event_tags", joinColumns = @JoinColumn(name = "event_id"))
-    @Column(name = "tag")
-    private Set<String> tags = new HashSet<>(); // Tagovi
+    @ManyToMany(fetch = FetchType.LAZY /*, NO CascadeType.PERSIST */)
+    @JoinTable(
+            name = "event_tags",
+            joinColumns        = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<TagModel> tags = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY) // Veza sa kategorijom
     @JoinColumn(name = "category_id", nullable = false)

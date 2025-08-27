@@ -1,16 +1,23 @@
 package rs.raf.backend.service;
 
 import rs.raf.backend.model.EventModel;
+import rs.raf.backend.model.TagModel;
 import rs.raf.backend.repository.event.EventRepository;
+import rs.raf.backend.repository.tag.TagRepository;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EventService {
     private final EventRepository eventRepository;
+    private final TagRepository tagRepository;
 
     // Ubacuješ konkretan repo (npr. MySqlEventRepository)
-    public EventService(EventRepository eventRepository) {
+    public EventService(EventRepository eventRepository, TagRepository tagRepository) {
         this.eventRepository = eventRepository;
+        this.tagRepository = tagRepository;
     }
 
     public List<EventModel> getAllEvents() {
@@ -30,6 +37,14 @@ public class EventService {
     }
 
     public void createEvent(EventModel event) {
+        Set<Long> tagIds = event.getTags()
+                .stream()
+                .map(TagModel::getId)
+                .collect(Collectors.toSet());
+
+        Set<TagModel> resolved = tagRepository.findAllByIds(tagIds);
+        event.setTags(resolved);
+
         eventRepository.save(event);
     }
 
