@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import _axios from "../axiosInstance";
 import "../pages_css/EventDetailsCss.css";   // optional
 
@@ -9,6 +9,7 @@ export default function EventDetails() {
 
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState({ author: "", text: "" });
+  const [related, setRelated]   = useState([]);
 
   // fetch comments
   useEffect(() => {
@@ -79,6 +80,29 @@ const handleAdd = async (e) => {
   setComments(data);
 };
 
+// like or dislike comment
+
+const voteComment = async (commentId, type) => {
+  const key = `comment_${type}_${commentId}`;
+  if (localStorage.getItem(key)) return;
+
+  await _axios.post(`/events/comments/${commentId}/${type}`).catch(() => {});
+  localStorage.setItem(key, "1");
+
+  // optimistic update
+  setComments(prev =>
+    prev.map(c =>
+      c.id === commentId
+        ? { ...c, [type]: c[type] + 1 }
+        : c
+    )
+  );
+};
+
+
+
+// end of lajkovi
+
   if (!event) return <p className="loading">Učitavanje događaja...</p>;
 
   const {
@@ -104,7 +128,20 @@ const handleAdd = async (e) => {
 
       <p><strong>Pregleda:</strong> {event.views}</p>
 
-      <p><strong>Tagovi:</strong> {event.tags?.length ? event.tags.map(t => t.tagName).join(", ") : "-"}</p>
+      <p>
+  <strong>Tagovi:</strong>{" "}
+  {event.tags?.length
+    ? event.tags.map(t => (
+        <Link
+          key={t.id}
+          to={`/events/tag/${t.id}`}
+          className="tag-link"
+        >
+          #{t.tagName}
+        </Link>
+      ))
+    : "-"}
+</p>
 
      <p>
   <button onClick={() => vote("like")} disabled={localStorage.getItem(`event_like_${id}`)}>
@@ -128,10 +165,42 @@ const handleAdd = async (e) => {
           <div key={c.id} className="comment">
             <strong>{c.author}</strong> – {new Date(c.createdAt).toLocaleString("sr-RS")}
             <p>{c.text}</p>
-            <small>👍 {c.likes} &nbsp; 👎 {c.dislikes}</small>
+            <small>
+  <button
+    onClick={() => voteComment(c.id, "like")}
+    disabled={localStorage.getItem(`comment_like_${c.id}`)}
+  >
+    👍 {c.likes}
+  </button>
+  &nbsp;
+  <button
+    onClick={() => voteComment(c.id, "dislike")}
+    disabled={localStorage.getItem(`comment_dislike_${c.id}`)}
+  >
+    👎 {c.dislikes}
+  </button>
+</small>
           </div>
         ))}
       </div>
+        {/*  PROČITAJ JOŠ  */}
+{related.length > 0 && (
+  <>
+    <h3>Pročitaj još...</h3>
+    <div className="read-more">
+      {related.slice(0, 3).map(r => (
+        <div key={r.id} className="mini-card">
+          <h4>
+            <Link to={`/events/${r.id}`}>{r.title}</Link>
+          </h4>
+          <p>{r.description?.slice(0, 80)}…</p>
+        </div>
+      ))}
+    </div>
+  </>
+)}
+
+
     </div>
   );
 }

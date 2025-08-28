@@ -32,4 +32,22 @@ public class MySqlCommentRepository implements CommentRepository {
         }
         em.getTransaction().commit();
     }
+
+    @Override
+    public void likeComment(Long id) {
+        em.getTransaction().begin();
+        em.createQuery("UPDATE CommentModel c SET c.likes = c.likes + 1 WHERE c.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
+        em.getTransaction().commit();
+    }
+
+    @Override
+    public void dislikeComment(Long id) {
+        em.getTransaction().begin();
+        em.createQuery("UPDATE CommentModel c SET c.dislikes = c.dislikes + 1 WHERE c.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
+        em.getTransaction().commit();
+    }
 }

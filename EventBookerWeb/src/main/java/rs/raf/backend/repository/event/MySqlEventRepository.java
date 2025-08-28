@@ -75,4 +75,23 @@ public class MySqlEventRepository implements EventRepository {
                 .setMaxResults(limit)
                 .getResultList();
     }
+
+    @Override
+    public List<EventModel> findMostViewed(int limit) {
+        return em.createQuery(
+                        "SELECT e FROM EventModel e ORDER BY e.views DESC",
+                        EventModel.class
+                )
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    @Override
+    public List<EventModel> findByTagId(Long tagId) {
+        return em.createQuery(
+                        "SELECT DISTINCT e FROM EventModel e JOIN e.tags t WHERE t.id = :tagId",
+                        EventModel.class)
+                .setParameter("tagId", tagId)
+                .getResultList();
+    }
 }

@@ -1,0 +1,17 @@
+.tag-link {
+  display: inline-block;
+  margin-right: 0.4rem;
+  color: #0b5cff;
+  text-decoration: none;
+}
+.read-more {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.mini-card {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  border-radius: 4px;
+}

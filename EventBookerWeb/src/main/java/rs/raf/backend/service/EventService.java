@@ -5,7 +5,6 @@ import rs.raf.backend.model.TagModel;
 import rs.raf.backend.repository.event.EventRepository;
 import rs.raf.backend.repository.tag.TagRepository;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,6 +58,10 @@ public class EventService {
         return eventRepository.findLatest(limit);
     }
 
+    public List<EventModel> getMostViewedEvents(int limit) {
+        return eventRepository.findMostViewed(limit);
+    }
+
     public void incrementViewCount(Long id) {
         EventModel e = eventRepository.findById(id);
         if (e != null) {
@@ -73,5 +76,9 @@ public class EventService {
         if ("like".equals(type)) e.setLikes(e.getLikes() + 1);
         else e.setDislikes(e.getDislikes() + 1);
         eventRepository.save(e);
+    }
+
+    public List<EventModel> findByTag(Long tagId) {
+        return eventRepository.findByTagId(tagId);
     }
 }

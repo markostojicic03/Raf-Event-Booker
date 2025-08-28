@@ -16,6 +16,7 @@ import PopularPage from './pages/PopularPage';
 import CategoryPage from './pages/CategoryPage';
 import SearchResults from './pages/SearchResults';
 import EventDetails from './pages/EventDetails';
+import EventTagPage from './pages/EventTagPage';
 
 function App() {
   const [currentDate, setCurrentDate] = useState('');
@@ -46,6 +47,7 @@ function App() {
               <Route path="/category/:id" element={<CategoryPage />} />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/events/:id" element={<EventDetails />} />
+              <Route path="/events/tag/:tagId" element={<EventTagPage />} />
             </Routes>
           </Suspense>
         </main>

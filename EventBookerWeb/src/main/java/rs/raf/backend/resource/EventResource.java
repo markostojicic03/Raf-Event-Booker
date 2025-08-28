@@ -82,6 +82,12 @@ public class EventResource {
         return Response.ok().build();
     }
 
+    @GET
+    @Path("/tag/{tagId}")
+    public List<EventModel> getEventsByTag(@PathParam("tagId") Long tagId) {
+        return eventService.findByTag(tagId);
+    }
+
     @POST
     @Path("/{id}/like")
     public Response like(@PathParam("id") Long id,
@@ -135,6 +141,12 @@ public class EventResource {
         return eventService.getLatestEvents(10);
     }
 
+    @GET
+    @Path("/popular")
+    public List<EventModel> getMostViewedEvents() {
+        return eventService.getMostViewedEvents(10);
+    }
+
     // Kreiraj novi događaj
     @POST
     public Response createEvent(EventModel event) {
@@ -181,5 +193,19 @@ public class EventResource {
 
         commentService.addComment(comment);
         return Response.status(Response.Status.CREATED).build();
+    }
+
+    @POST
+    @Path("/comments/{commentId}/like")
+    public Response likeComment(@PathParam("commentId") Long commentId) {
+        commentService.likeComment(commentId);
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/comments/{commentId}/dislike")
+    public Response dislikeComment(@PathParam("commentId") Long commentId) {
+        commentService.dislikeComment(commentId);
+        return Response.ok().build();
     }
 }

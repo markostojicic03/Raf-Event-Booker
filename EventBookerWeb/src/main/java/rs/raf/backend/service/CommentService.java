@@ -22,4 +22,12 @@ public class CommentService {
     public void addComment(CommentModel comment) {
         commentRepository.save(comment);
     }
+
+    public void likeComment(Long id) {
+        commentRepository.likeComment(id);
+    }
+
+    public void dislikeComment(Long id) {
+        commentRepository.dislikeComment(id);
+    }
 }

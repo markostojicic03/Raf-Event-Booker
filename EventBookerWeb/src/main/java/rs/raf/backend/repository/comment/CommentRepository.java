@@ -8,4 +8,6 @@ public interface CommentRepository {
 
     List<CommentModel> findByEventIdOrderByCreatedAtDesc(Long eventId);
     void save(CommentModel comment);
+    public void likeComment(Long commentId);
+    public void dislikeComment(Long commentId);
 }

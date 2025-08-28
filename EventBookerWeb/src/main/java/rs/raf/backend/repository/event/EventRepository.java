@@ -14,4 +14,6 @@ public interface EventRepository {
 
     // Nova metoda
     List<EventModel> findLatest(int limit);
+    List<EventModel> findMostViewed(int limit);
+    public List<EventModel> findByTagId(Long tagId);
 }
