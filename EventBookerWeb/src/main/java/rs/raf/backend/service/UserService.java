@@ -8,7 +8,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
-    // Ubaciš konkretan repo (za sad ručno)
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

@@ -1,10 +1,13 @@
 package rs.raf.backend.resource;
 
 
+import rs.raf.backend.model.CommentModel;
 import rs.raf.backend.model.EventModel;
+import rs.raf.backend.repository.comment.MySqlCommentRepository;
 import rs.raf.backend.repository.event.MySqlEventRepository;
 import rs.raf.backend.repository.tag.MySqlTagRepository;
 import rs.raf.backend.repository.user.MySqlUserRepository;
+import rs.raf.backend.service.CommentService;
 import rs.raf.backend.service.EventService;
 
 import javax.inject.Inject;
@@ -14,6 +17,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Path("/events")
@@ -23,6 +27,7 @@ public class EventResource {
 
 
     private final EventService eventService = new EventService(new MySqlEventRepository(), new MySqlTagRepository());
+    private final CommentService commentService = new CommentService(new MySqlCommentRepository());
 
     // Vrati sve događaje
     @GET
@@ -143,5 +148,38 @@ public class EventResource {
     public Response deleteEvent(@PathParam("id") Long id) {
         eventService.deleteEvent(id);
         return Response.status(Response.Status.NO_CONTENT).build();
+    }
+
+
+    /*  GET /events/{id}/comments  */
+    @GET
+    @Path("/{id}/comments")
+    public List<CommentModel> getComments(@PathParam("id") Long eventId) {
+        return commentService.getCommentsForEvent(eventId);
+    }
+
+    /*  POST /events/{id}/comments  */
+    @POST
+    @Path("/{id}/comments")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response addComment(@PathParam("id") Long eventId, CommentModel commentModel) {
+
+        System.out.println(">>> addComment: eventId=" + eventId +
+                ", author=" + commentModel.getAuthor() +
+                ", text=" + commentModel.getText() +
+                ", createdAt=" + commentModel.getCreatedAt());
+
+        if (eventService.getEvent(eventId) == null)
+            return Response.status(Response.Status.NOT_FOUND).build();
+
+        CommentModel comment = new CommentModel();
+        comment.setEvent(eventService.getEvent(eventId));
+        comment.setAuthor(commentModel.getAuthor());
+        comment.setText(commentModel.getText());
+        comment.setCreatedAt(LocalDateTime.now().toString());
+
+
+        commentService.addComment(comment);
+        return Response.status(Response.Status.CREATED).build();
     }
 }

@@ -7,6 +7,14 @@ export default function EventDetails() {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
 
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState({ author: "", text: "" });
+
+  // fetch comments
+  useEffect(() => {
+    _axios.get(`/events/${id}/comments`).then(res => setComments(res.data));
+  }, [id]);
+
   console.log("EventDetails rendered, id =", id);
 useEffect(() => {
   if (!id) return;
@@ -21,6 +29,8 @@ useEffect(() => {
     localStorage.setItem(key, "1");
   }
 }, [id]);
+
+
 
 //// like/dislike
 const [likes, setLikes]       = useState(0);
@@ -49,6 +59,26 @@ const vote = async (type) => {
 
 // end of like/dislike
 
+  // add comment
+const handleAdd = async (e) => {
+  e.preventDefault();
+  if (!newComment.author.trim() || !newComment.text.trim()) return;
+
+  const payload = {
+    author: newComment.author.trim(),
+    text: newComment.text.trim(),
+    createdAt: new Date().toISOString() // if backend does NOT default it
+  };
+
+  await _axios.post(`/events/${id}/comments`, payload, {
+    headers: { "Content-Type": "application/json" }
+  });
+
+  setNewComment({ author: "", text: "" });
+  const { data } = await _axios.get(`/events/${id}/comments`);
+  setComments(data);
+};
+
   if (!event) return <p className="loading">Učitavanje događaja...</p>;
 
   const {
@@ -72,6 +102,10 @@ const vote = async (type) => {
 
       <p><strong>Kategorija:</strong> {category?.categoryName || "-"}</p>
 
+      <p><strong>Pregleda:</strong> {event.views}</p>
+
+      <p><strong>Tagovi:</strong> {event.tags?.length ? event.tags.map(t => t.tagName).join(", ") : "-"}</p>
+
      <p>
   <button onClick={() => vote("like")} disabled={localStorage.getItem(`event_like_${id}`)}>
     👍 {likes}
@@ -80,6 +114,24 @@ const vote = async (type) => {
     👎 {dislikes}
   </button>
 </p>
+
+      {/* COMMENT FORM */}
+      <h3>Komentari ({comments.length})</h3>
+      <form onSubmit={handleAdd} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <input placeholder="Ime" value={newComment.author} onChange={e => setNewComment({...newComment, author: e.target.value})} />
+        <textarea placeholder="Tekst" rows="3" value={newComment.text} onChange={e => setNewComment({...newComment, text: e.target.value})} />
+        <button type="submit">Pošalji</button>
+     </form>
+      {/* COMMENT LIST */}
+      <div className="comments">
+        {comments.map(c => (
+          <div key={c.id} className="comment">
+            <strong>{c.author}</strong> – {new Date(c.createdAt).toLocaleString("sr-RS")}
+            <p>{c.text}</p>
+            <small>👍 {c.likes} &nbsp; 👎 {c.dislikes}</small>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
