@@ -208,4 +208,26 @@ public class EventResource {
         commentService.dislikeComment(commentId);
         return Response.ok().build();
     }
+
+    @GET
+    @Path("/related")
+    public List<EventModel> getRelated(
+            @QueryParam("ids") String tagIds,          // comma-separated tag IDs
+            @QueryParam("exclude") Long excludeId) {
+        // split "1,2,3" -> List<Long>
+        List<Long> ids = java.util.Arrays.stream(tagIds.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(Long::valueOf)
+                .collect(java.util.stream.Collectors.toList());
+
+        return eventService.findRelated(ids, excludeId, 3); // max 3
+
+    }
+
+    @GET
+    @Path("/top-reactions")
+    public List<EventModel> getTopReactions() {
+        return eventService.findTopByReactions(3);
+    }
 }

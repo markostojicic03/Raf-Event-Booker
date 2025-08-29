@@ -81,4 +81,11 @@ public class EventService {
     public List<EventModel> findByTag(Long tagId) {
         return eventRepository.findByTagId(tagId);
     }
+    public List<EventModel> findRelated(List<Long> tagIds, Long excludeId, int limit) {
+        return eventRepository.findRelatedByTags(tagIds, excludeId, limit);
+    }
+
+    public List<EventModel> findTopByReactions(int limit) {
+        return eventRepository.findTopByReactions(limit);
+    }
 }

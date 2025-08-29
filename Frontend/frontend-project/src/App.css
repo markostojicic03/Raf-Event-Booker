@@ -46,3 +46,32 @@
   max-width: 800px;           /* optional – limits width on large screens */
   margin: 0 auto;
 }
+
+.top-reactions {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  width: 220px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  z-index: 999;
+  font-size: 0.85rem;
+}
+.top-reactions h4 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+.top-reactions ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.top-reactions li {
+  margin-bottom: 0.3rem;
+}
+.top-reactions a {
+  color: #0b5cff;
+  text-decoration: none;
+}

@@ -1,6 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NavigationBar from './components/NavigationBar';
+import TopReactions from './components/TopReactions';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 
@@ -33,6 +34,7 @@ function App() {
     <div className="App">
       <Router>
         <NavigationBar />
+         <TopReactions />
         <main className="main-content">
           <Suspense
             fallback={

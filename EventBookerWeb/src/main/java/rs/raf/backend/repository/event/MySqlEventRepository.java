@@ -94,4 +94,28 @@ public class MySqlEventRepository implements EventRepository {
                 .setParameter("tagId", tagId)
                 .getResultList();
     }
+
+    @Override
+    public List<EventModel> findRelatedByTags(List<Long> tagIds, Long excludeId, int limit) {
+        return em.createQuery(
+                        "SELECT DISTINCT e FROM EventModel e " +
+                                "JOIN e.tags t " +
+                                "WHERE t.id IN (:tagIds) AND e.id <> :excludeId " +
+                                "ORDER BY e.createdAt DESC",
+                        EventModel.class)
+                .setParameter("tagIds", tagIds)
+                .setParameter("excludeId", excludeId)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    @Override
+    public List<EventModel> findTopByReactions(int limit) {
+        return em.createQuery(
+                        "SELECT e FROM EventModel e " +
+                                "ORDER BY (e.likes + e.dislikes) DESC",
+                        EventModel.class)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }

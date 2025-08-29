@@ -20,17 +20,26 @@ export default function EventDetails() {
 useEffect(() => {
   if (!id) return;
 
-  _axios.get(`/events/${id}`)
-    .then(res => setEvent(res.data))
-    .catch(console.error);
+  // single call: mark view THEN load event + comments + related
+  Promise.all([
+    _axios.post(`/events/${id}/view`),          // server-side cookie decides “once”
+    _axios.get(`/events/${id}`),
+    _axios.get(`/events/${id}/comments`)
+  ])
+  .then(([, ev, cm]) => {
+    setEvent(ev.data);
+    setComments(cm.data);
 
-  const key = `view_${id}`;
-  if (!localStorage.getItem(key)) {
-    _axios.post(`/events/${id}/view`).catch(() => {});
-    localStorage.setItem(key, "1");
-  }
+    // fetch related events that share any tag
+    if (ev.data.tags?.length) {
+      const tagIds = ev.data.tags.map(t => t.id).join(",");
+      _axios
+        .get(`/events/related?ids=${tagIds}&exclude=${id}`)
+        .then(r => setRelated(r.data.slice(0, 3)));
+    }
+  })
+  .catch(console.error);
 }, [id]);
-
 
 
 //// like/dislike

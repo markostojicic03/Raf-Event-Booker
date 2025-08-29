@@ -16,4 +16,6 @@ public interface EventRepository {
     List<EventModel> findLatest(int limit);
     List<EventModel> findMostViewed(int limit);
     public List<EventModel> findByTagId(Long tagId);
+    public List<EventModel> findRelatedByTags(List<Long> tagIds, Long excludeId, int limit);
+    public List<EventModel> findTopByReactions(int limit);
 }
