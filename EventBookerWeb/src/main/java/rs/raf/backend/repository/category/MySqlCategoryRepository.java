@@ -5,6 +5,7 @@ import rs.raf.backend.model.CategoryModel;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import java.sql.Connection;
 import java.util.List;
 
 public class MySqlCategoryRepository implements CategoryRepository {
@@ -52,12 +53,32 @@ public class MySqlCategoryRepository implements CategoryRepository {
     }
 
     @Override
-    public void delete(Long id) {
-        em.getTransaction().begin();
-        CategoryModel category = em.find(CategoryModel.class, id);
-        if (category != null) {
-            em.remove(category);
+    public boolean delete(Long id) {
+        long eventCount = em.createQuery(
+                        "SELECT COUNT(e) FROM EventModel e WHERE e.category.id = :catId", Long.class)
+                .setParameter("catId", id)
+                .getSingleResult();
+
+        if (eventCount > 0) {
+            return false;                // can’t delete
         }
+
+        CategoryModel c = em.find(CategoryModel.class, id);
+        if (c == null) return false;
+
+        em.getTransaction().begin();
+        em.remove(c);
         em.getTransaction().commit();
+        return true;
+    }
+
+    @Override
+    public int countByNameIgnoreCase(String name) {
+        Long count = em.createQuery(
+                        "SELECT COUNT(c) FROM CategoryModel c WHERE LOWER(c.categoryName) = LOWER(:name)",
+                        Long.class)
+                .setParameter("name", name)
+                .getSingleResult();
+        return count.intValue();
     }
 }

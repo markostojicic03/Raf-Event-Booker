@@ -1,14 +1,18 @@
 package rs.raf.backend.resource;
 
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import rs.raf.backend.model.CommentModel;
 import rs.raf.backend.model.EventModel;
+import rs.raf.backend.model.UserModel;
 import rs.raf.backend.repository.comment.MySqlCommentRepository;
 import rs.raf.backend.repository.event.MySqlEventRepository;
 import rs.raf.backend.repository.tag.MySqlTagRepository;
 import rs.raf.backend.repository.user.MySqlUserRepository;
 import rs.raf.backend.service.CommentService;
 import rs.raf.backend.service.EventService;
+import rs.raf.backend.service.UserService;
+import rs.raf.backend.utils.JwtUtil;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +32,7 @@ public class EventResource {
 
     private final EventService eventService = new EventService(new MySqlEventRepository(), new MySqlTagRepository());
     private final CommentService commentService = new CommentService(new MySqlCommentRepository());
+    private final UserService userService   = new UserService(new MySqlUserRepository());
 
     // Vrati sve događaje
     @GET
@@ -127,6 +132,19 @@ public class EventResource {
 
         return Response.ok().build();
     }
+    private UserModel currentUser(HttpServletRequest req) {
+        String authHeader = req.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) return null;
+
+        String token = authHeader.substring(7).trim();  // remove "Bearer "
+        if (token.isEmpty()) return null;
+
+        try {
+            return userService.getUserByEmail(JwtUtil.extractUsername(token)).orElse(null);
+        } catch (JWTDecodeException e) {
+            return null;   // malformed token
+        }
+    }
 
     @GET
     @Path("/search")
@@ -149,18 +167,36 @@ public class EventResource {
 
     // Kreiraj novi događaj
     @POST
-    public Response createEvent(EventModel event) {
-        eventService.createEvent(event);
-        return Response.status(Response.Status.CREATED).build();
+    public Response createEvent(EventModel dto, @Context HttpServletRequest req) {
+        UserModel author = currentUser(req);
+        if (author == null) return Response.status(401).build();
+
+        dto.setAuthor(author);          // always the logged-in admin
+        dto.setCreatedAt(LocalDateTime.now().toString());
+
+        EventModel created = eventService.createEvent(dto);
+        return Response.status(201).entity(created).build();
     }
 
     // Obriši događaj po ID-u
     @DELETE
     @Path("/{id}")
     public Response deleteEvent(@PathParam("id") Long id) {
-        eventService.deleteEvent(id);
-        return Response.status(Response.Status.NO_CONTENT).build();
+        boolean ok = eventService.deleteEvent(id);
+        return ok ? Response.noContent().build()
+                : Response.status(Response.Status.NOT_FOUND).build();
     }
+
+    @PUT
+    @Path("/{id}")
+    public Response updateEvent(@PathParam("id") Long id, EventModel e) {
+        EventModel updated = eventService.updateEvent(id, e);
+        if (updated == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(updated).build();
+    }
+
 
 
     /*  GET /events/{id}/comments  */

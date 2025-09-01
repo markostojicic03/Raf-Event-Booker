@@ -38,15 +38,14 @@ public class CategoryService {
     }
 
     public boolean deleteCategory(Long id) {
-        CategoryModel existing = categoryRepository.findById(id);
-        if (existing != null) {
-            categoryRepository.delete(existing.getId());
-            return true;
-        }
-        return false;
+        return categoryRepository.delete(id);
     }
     public List<CategoryModel> getAllCategoriesById(Long id) {
         return categoryRepository.findAllCategoriesById(id);
+    }
+
+    public boolean existsByNameIgnoreCase(String name) {
+        return categoryRepository.countByNameIgnoreCase(name) > 0;
     }
 
 }

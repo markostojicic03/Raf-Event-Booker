@@ -35,7 +35,7 @@ public class EventService {
         return eventRepository.findById(id);
     }
 
-    public void createEvent(EventModel event) {
+    public EventModel createEvent(EventModel event) {
         Set<Long> tagIds = event.getTags()
                 .stream()
                 .map(TagModel::getId)
@@ -44,14 +44,23 @@ public class EventService {
         Set<TagModel> resolved = tagRepository.findAllByIds(tagIds);
         event.setTags(resolved);
 
-        eventRepository.save(event);
+        return eventRepository.save(event);
     }
 
-    public void deleteEvent(Long id) {
+    public EventModel updateEvent(Long id, EventModel e) {
+        EventModel existing = eventRepository.findById(id);
+        if (existing == null) return null;
+        e.setId(id);
+        return eventRepository.save(e);
+    }
+
+    public boolean deleteEvent(Long id) {
+        if (eventRepository.findById(id) == null) return false;
         eventRepository.delete(id);
+        return true;
     }
 
-    public void save(EventModel e) { eventRepository.save(e); }
+    public EventModel save(EventModel e) { return eventRepository.save(e); }
 
 
     public List<EventModel> getLatestEvents(int limit) {

@@ -52,6 +52,23 @@ export default function AdminPage() {
 
   const close = () => setModal({ show: false, type: "", item: null });
 
+  
+const remove = async (id) => {
+  const endpoint = `/category/${id}`;
+  try {
+    await _axios.delete(endpoint);
+    load("/category");
+  } catch (err) {
+    if (err.response?.status === 409) {
+      alert(err.response.data.message);   // shows the backend text
+    } else {
+      alert("Greška prilikom brisanja.");
+    }
+  }
+};
+
+
+
   const save = async () => {
     let endpoint = "";
     let method = "post";
@@ -64,26 +81,22 @@ export default function AdminPage() {
       method = "put";
     }
 
+  try {
     await _axios[method](endpoint, form);
-load(
-  activeTab === "categories" ? "/category"
-  : activeTab === "events"   ? "/events"
-  : "/users"
-);
-close();
-  };
-
-  const remove = async (id) => {
-    const endpoint = activeTab === "categories" ? `/category/${id}`
-                : activeTab === "events"   ? `/events/${id}`
-                : `/users/${id}`;
-await _axios.delete(endpoint);
-load(
-  activeTab === "categories" ? "/category"
-  : activeTab === "events"   ? "/events"
-  : "/users"
-);
-  };
+    load(
+      activeTab === "categories" ? "/category"
+      : activeTab === "events"   ? "/events"
+      : "/users"
+    );
+    close();
+  } catch (err) {
+    if (err.response?.status === 409) {
+      alert(err.response.data.message);           // or setState for nicer UI
+    } else {
+      alert("Unexpected error");
+    }
+  }
+};
 
   /* ----------------------------------------------------------
      5.  JSX
@@ -119,7 +132,7 @@ load(
 
       {/* Add button */}
       <Button variant="primary" onClick={() => open(activeTab, null)} className="mb-3">
-        Dodaj novi{(activeTab.slice(-1))}
+        Dodaj novu kategoriju/event/usera 
       </Button>
 
       {/* Table */}

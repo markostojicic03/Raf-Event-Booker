@@ -12,6 +12,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Path("/category")
@@ -45,33 +46,37 @@ public class CategoryResource {
     }
 
     @POST
-    public Response createCategory(CategoryModel category) {
-        CategoryModel created = categoryService.createCategory(category);
-        return Response.status(Response.Status.CREATED)
-                .entity(created)
-                .build();
+    public Response createCategory(CategoryModel dto) {
+        // already exists?
+        if (categoryService.existsByNameIgnoreCase(dto.getCategoryName())) {
+            Map<String, String> m = Map.of("message", "Category with this name already exists");
+            return Response.status(Response.Status.CONFLICT).entity(m).build();
+        }
+
+        CategoryModel created = categoryService.createCategory(dto);
+        return Response.status(Response.Status.CREATED).entity(created).build();
     }
 
     @PUT
     @Path("/{id}")
-    public Response updateCategory(@PathParam("id") Long id, CategoryModel category) {
-        CategoryModel updated = categoryService.updateCategory(id, category);
-        if (updated == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Category not found with ID: " + id)
-                    .build();
-        }
-        return Response.ok(updated).build();
+    public CategoryModel updateCategory(@PathParam("id") Long id, CategoryModel dto) {
+        CategoryModel existing = categoryService.getCategoryById(id).orElse(null);
+        if (existing == null) return null;
+
+        existing.setCategoryName(dto.getCategoryName());
+        existing.setCategoryDescription(dto.getCategoryDescription());
+        categoryService.updateCategory(id, existing);          // JPA/Spring automatically flushes
+        return existing;
     }
 
     @DELETE
     @Path("/{id}")
     public Response deleteCategory(@PathParam("id") Long id) {
-        boolean deleted = categoryService.deleteCategory(id);
-        if (!deleted) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Category not found with ID: " + id)
-                    .build();
+        boolean ok = categoryService.deleteCategory(id);
+        if (!ok) {
+            Map<String, String> m = Map.of("message",
+                    "Brisanje nije dozvoljeno – postoje događaji u ovoj kategoriji.");
+            return Response.status(Response.Status.CONFLICT).entity(m).build();
         }
         return Response.noContent().build();
     }

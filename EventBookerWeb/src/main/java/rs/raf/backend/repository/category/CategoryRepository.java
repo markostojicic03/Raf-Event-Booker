@@ -11,5 +11,6 @@ public interface CategoryRepository {
     List<CategoryModel> findAllCategoriesById(Long id);
     CategoryModel searchByName(String name);
     void save(CategoryModel category);
-    void delete(Long id);
+    boolean delete(Long id);
+    public int countByNameIgnoreCase(String name);
 }

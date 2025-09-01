@@ -9,7 +9,7 @@ public interface EventRepository {
     List<EventModel> findAllByCategoryId(Long categoryId);
     List<EventModel> findAllBySearch(String querySearch);
     EventModel findById(Long id);
-    void save(EventModel event);
+    EventModel save(EventModel event);
     void delete(Long id);
 
     // Nova metoda

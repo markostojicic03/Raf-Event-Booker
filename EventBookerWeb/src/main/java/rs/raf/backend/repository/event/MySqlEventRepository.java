@@ -46,7 +46,7 @@ public class MySqlEventRepository implements EventRepository {
     }
 
     @Override
-    public void save(EventModel event) {
+    public EventModel save(EventModel event) {
         em.getTransaction().begin();
         if (event.getId() == null) {
             em.persist(event);
@@ -54,6 +54,7 @@ public class MySqlEventRepository implements EventRepository {
             em.merge(event);
         }
         em.getTransaction().commit();
+        return event;
     }
 
     @Override

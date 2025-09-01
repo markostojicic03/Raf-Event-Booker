@@ -1,6 +1,8 @@
 package rs.raf.backend.utils;
 
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -22,4 +24,12 @@ public final class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, KEY)
                 .compact();
     }
+
+    public static String extractUsername(String token) {
+        return JWT.require(Algorithm.HMAC256(SECRET))
+                .build()
+                .verify(token)
+                .getSubject();
+    }
+
 }
