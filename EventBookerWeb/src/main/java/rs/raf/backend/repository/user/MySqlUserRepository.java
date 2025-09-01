@@ -5,6 +5,7 @@ import rs.raf.backend.model.UserModel;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import java.util.List;
+import java.util.Optional;
 
 public class MySqlUserRepository implements UserRepository {
     private EntityManager em = Persistence
@@ -41,5 +42,14 @@ public class MySqlUserRepository implements UserRepository {
             em.remove(user);
             em.getTransaction().commit();
         }
+    }
+
+    @Override
+    public Optional<UserModel> findUserByEmail(String email) {
+        return em.createQuery(
+                        "SELECT u FROM UserModel u WHERE u.email = :email", UserModel.class)
+                .setParameter("email", email)
+                .getResultStream()
+                .findFirst();
     }
 }

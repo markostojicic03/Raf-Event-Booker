@@ -46,7 +46,22 @@ const NavigationBar = () => {
                 </NavDropdown.Item>
               ))}
             </NavDropdown>
+        
           </Nav>
+
+            {/* Login button – flush right */}
+  <Nav>
+    <Button
+  as={Link}
+  to="/login"
+  variant="outline-info"
+
+  className="ms-2"
+>
+  Prijava
+</Button>
+  </Nav>
+
 
           <Form className="d-flex" onSubmit={handleSearch}>
             <FormControl

@@ -2,12 +2,16 @@ package rs.raf.backend.resource;
 
 import rs.raf.backend.model.UserModel;
 import rs.raf.backend.repository.user.MySqlUserRepository;
+import rs.raf.backend.requests.LoginRequest;
 import rs.raf.backend.service.UserService;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -39,5 +43,23 @@ public class UserResource {
         return Response.status(Response.Status.NO_CONTENT).build();
     }
 
+
+    @POST
+    @Path("/login")
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response login(@Valid LoginRequest loginRequest)
+    {
+        Map<String, String> response = new HashMap<>();
+
+        String jwt = this.userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        if (jwt == null) {
+            response.put("message", "These credentials do not match our records, hash is: "+jwt );
+            return Response.status(422, "Unprocessable Entity").entity(response).build();
+        }
+
+        response.put("jwt", jwt);
+
+        return Response.ok(response).build();
+    }
 
 }
