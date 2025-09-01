@@ -18,7 +18,18 @@ const handleLogin = async (e) => {
       password
     });
     localStorage.setItem("jwt", data.jwt);   // backend returns { "jwt": "..." }
+    localStorage.setItem('role', data.role); 
+    
+  // Redirect based on role
+  if (data.role === "admin") {
     navigate("/admin");
+  } else if (data.role === "event_creator") {
+    navigate("/events");    // or any creator dashboard
+  } else {
+    navigate("/");
+  }
+
+
   } catch (err) {
     setError("Neispravni kredencijali");
   }

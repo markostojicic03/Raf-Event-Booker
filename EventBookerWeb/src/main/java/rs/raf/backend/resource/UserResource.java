@@ -47,19 +47,20 @@ public class UserResource {
     @POST
     @Path("/login")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response login(@Valid LoginRequest loginRequest)
-    {
+    public Response login(@Valid LoginRequest loginRequest) {
         Map<String, String> response = new HashMap<>();
 
         String jwt = this.userService.login(loginRequest.getUsername(), loginRequest.getPassword());
         if (jwt == null) {
-            response.put("message", "These credentials do not match our records, hash is: "+jwt );
-            return Response.status(422, "Unprocessable Entity").entity(response).build();
+            response.put("message", "These credentials do not match our records");
+            return Response.status(422).entity(response).build();
         }
 
         response.put("jwt", jwt);
+        response.put("role", userService.getUserByEmail(loginRequest.getUsername())
+                .orElseThrow()
+                .getRole());
 
         return Response.ok(response).build();
     }
-
 }

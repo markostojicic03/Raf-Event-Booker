@@ -14,6 +14,11 @@ export default function HomePage() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+  useEffect(() => {
+  const role = localStorage.getItem("role");
+  if (role === "admin") navigate("/admin", { replace: true });
+  else if (role === "event_creator") navigate("/events", { replace: true });
+}, [navigate]);
 
   if (loading) return <p className="loading">Učitavanje...</p>;
 

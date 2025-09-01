@@ -10,6 +10,7 @@ import rs.raf.backend.repository.user.UserRepository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public class UserService {
     private final UserRepository userRepository;
@@ -35,6 +36,11 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.delete(id);
     }
+
+    public Optional<UserModel> getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
+
     //// login
 
     public String login(String email, String password) {
@@ -49,7 +55,7 @@ public class UserService {
                         .withSubject(u.getEmail())
                         .withClaim("role", u.getRole())
                         .sign(ALGORITHM))
-                .orElse(hashedPassword);
+                .orElse(null);
     }
 
     public boolean isAuthorized(String token) {
