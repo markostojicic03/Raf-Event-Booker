@@ -29,8 +29,31 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public void createUser(UserModel user) {
-        userRepository.save(user);
+    public void createUser(UserModel u) {
+        if (u.getPassword() == null || !u.getPassword().equals(u.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+        u.setPasswordHash(DigestUtils.sha256Hex(u.getPassword()));
+        userRepository.save(u);
+    }
+
+    public void updateUser(UserModel u) {
+        UserModel existing = userRepository.findById(u.getId());
+        if (existing == null) return;
+
+        if (u.getPassword() != null && !u.getPassword().isEmpty()) {
+            if (!u.getPassword().equals(u.getConfirmPassword())) {
+                throw new IllegalArgumentException("Passwords do not match");
+            }
+            existing.setPasswordHash(DigestUtils.sha256Hex(u.getPassword()));
+        }
+
+        existing.setFirstName(u.getFirstName());
+        existing.setLastName(u.getLastName());
+        existing.setEmail(u.getEmail());
+        existing.setRole(u.getRole());
+
+        userRepository.save(existing);
     }
 
     public void deleteUser(Long id) {

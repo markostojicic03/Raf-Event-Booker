@@ -25,6 +25,12 @@ public class UserModel {
     private String lastName;
     private String passwordHash;
 
+    @Transient // not stored in DB
+    private String password;
+
+    @Transient
+    private String confirmPassword;
+
     @Column(nullable = false)
     private String role; // admin ili event_creator
 

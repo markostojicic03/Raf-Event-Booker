@@ -32,8 +32,12 @@ public class UserResource {
 
     @POST
     public Response createUser(UserModel user) {
-        userService.createUser(user);
-        return Response.status(Response.Status.CREATED).build();
+        try {
+            userService.createUser(user);
+            return Response.status(Response.Status.CREATED).build();
+        } catch (IllegalArgumentException ex) {
+            return Response.status(400).entity(Map.of("error", ex.getMessage())).build();
+        }
     }
 
     @DELETE
@@ -68,24 +72,11 @@ public class UserResource {
     @PUT
     @Path("/{id}")
     public Response updateUser(@PathParam("id") Long id, UserModel user) {
-        UserModel existing = userService.getUser(id);
-        if (existing == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        try {
+            userService.updateUser(user);
+            return Response.ok().build();
+        } catch (IllegalArgumentException ex) {
+            return Response.status(400).entity(Map.of("error", ex.getMessage())).build();
         }
-
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Email is required"))
-                    .build();
-        }
-
-
-        existing.setFirstName(user.getFirstName());
-        existing.setLastName(user.getLastName());
-        existing.setEmail(user.getEmail());
-        existing.setRole(user.getRole());
-
-        userService.createUser(existing);  
-        return Response.ok(existing).build();
     }
 }
