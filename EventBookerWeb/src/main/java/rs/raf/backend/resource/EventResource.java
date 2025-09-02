@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import rs.raf.backend.model.CommentModel;
 import rs.raf.backend.model.EventModel;
 import rs.raf.backend.model.UserModel;
+import rs.raf.backend.repository.category.MySqlCategoryRepository;
 import rs.raf.backend.repository.comment.MySqlCommentRepository;
 import rs.raf.backend.repository.event.MySqlEventRepository;
 import rs.raf.backend.repository.tag.MySqlTagRepository;
@@ -23,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Path("/events")
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,7 +32,7 @@ import java.util.List;
 public class EventResource {
 
 
-    private final EventService eventService = new EventService(new MySqlEventRepository(), new MySqlTagRepository());
+    private final EventService eventService = new EventService(new MySqlEventRepository(), new MySqlTagRepository(), new MySqlCategoryRepository());
     private final CommentService commentService = new CommentService(new MySqlCommentRepository());
     private final UserService userService   = new UserService(new MySqlUserRepository());
 
@@ -189,12 +191,16 @@ public class EventResource {
 
     @PUT
     @Path("/{id}")
-    public Response updateEvent(@PathParam("id") Long id, EventModel e) {
-        EventModel updated = eventService.updateEvent(id, e);
-        if (updated == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+    public Response updateEvent(@PathParam("id") Long id, EventModel dto) {
+        try {
+            EventModel updated = eventService.updateEvent(id, dto);
+            return updated != null ? Response.ok(updated).build()
+                    : Response.status(404).build();
+        } catch (IllegalArgumentException ex) {
+            return Response.status(400)
+                    .entity(Map.of("error", ex.getMessage()))
+                    .build();
         }
-        return Response.ok(updated).build();
     }
 
 

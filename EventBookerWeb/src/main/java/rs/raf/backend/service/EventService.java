@@ -1,7 +1,9 @@
 package rs.raf.backend.service;
 
+import rs.raf.backend.model.CategoryModel;
 import rs.raf.backend.model.EventModel;
 import rs.raf.backend.model.TagModel;
+import rs.raf.backend.repository.category.CategoryRepository;
 import rs.raf.backend.repository.event.EventRepository;
 import rs.raf.backend.repository.tag.TagRepository;
 
@@ -12,11 +14,13 @@ import java.util.stream.Collectors;
 public class EventService {
     private final EventRepository eventRepository;
     private final TagRepository tagRepository;
+    private final CategoryRepository categoryRepository;
 
     // Ubacuješ konkretan repo (npr. MySqlEventRepository)
-    public EventService(EventRepository eventRepository, TagRepository tagRepository) {
+    public EventService(EventRepository eventRepository, TagRepository tagRepository, CategoryRepository categoryRepository) {
         this.eventRepository = eventRepository;
         this.tagRepository = tagRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public List<EventModel> getAllEvents() {
@@ -47,11 +51,36 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public EventModel updateEvent(Long id, EventModel e) {
+    public EventModel updateEvent(Long id, EventModel dto) {
         EventModel existing = eventRepository.findById(id);
         if (existing == null) return null;
-        e.setId(id);
-        return eventRepository.save(e);
+
+        // basic fields
+        existing.setTitle(dto.getTitle());
+        existing.setDescription(dto.getDescription());
+        existing.setEventDate(dto.getEventDate());
+        existing.setLocation(dto.getLocation());
+        existing.setMaxCapacity(dto.getMaxCapacity());
+
+        // category
+        if (dto.getCategory() != null && dto.getCategory().getId() != null) {
+            CategoryModel cat =
+                    categoryRepository.findById(dto.getCategory().getId());
+            if (cat == null) throw new IllegalArgumentException("Unknown category");
+            existing.setCategory(cat);
+        }
+
+        // tags
+        if (dto.getTags() != null) {
+            Set<Long> tagIds = dto.getTags()
+                    .stream()
+                    .map(TagModel::getId)
+                    .collect(Collectors.toSet());
+            Set<TagModel> resolvedTags = tagRepository.findAllByIds(tagIds);
+            existing.setTags(resolvedTags);
+        }
+
+        return eventRepository.save(existing);
     }
 
     public boolean deleteEvent(Long id) {

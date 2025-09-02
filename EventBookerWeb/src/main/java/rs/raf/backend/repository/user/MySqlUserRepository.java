@@ -52,4 +52,6 @@ public class MySqlUserRepository implements UserRepository {
                 .getResultStream()
                 .findFirst();
     }
+
+
 }

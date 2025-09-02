@@ -21,6 +21,14 @@ export default function AdminPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 10;
 
+
+  const [categories, setCategories] = useState([]);
+const [tags, setTags] = useState([]);
+
+useEffect(() => {
+  _axios.get("/category").then(res => setCategories(res.data));
+  _axios.get("/tag")    .then(res => setTags(res.data));
+}, []);
   /* ----------------------------------------------------------
      2.  AUTH CHECK
   ---------------------------------------------------------- */
@@ -54,19 +62,26 @@ export default function AdminPage() {
 
   
 const remove = async (id) => {
-  const endpoint = `/category/${id}`;
+  let endpoint;
+  if (activeTab === "categories") endpoint = `/category/${id}`;
+  else if (activeTab === "events")  endpoint = `/events/${id}`;
+  else if (activeTab === "users")   endpoint = `/users/${id}`;
+
   try {
     await _axios.delete(endpoint);
-    load("/category");
+    load(
+      activeTab === "categories" ? "/category"
+      : activeTab === "events"   ? "/events"
+      : "/users"
+    );
   } catch (err) {
     if (err.response?.status === 409) {
-      alert(err.response.data.message);   // shows the backend text
+      alert(err.response.data.message);
     } else {
       alert("Greška prilikom brisanja.");
     }
   }
 };
-
 
 
   const save = async () => {
@@ -183,7 +198,45 @@ const remove = async (id) => {
                   onChange={(e) => setForm({ ...form, [f]: e.target.value })}
                 />
               </Form.Group>
+              
             ))}
+          {/* DODANOOOOOOOOOO*/}
+{activeTab === "events" && (
+  <>
+    <Form.Group className="mb-2">
+      <Form.Label>Category</Form.Label>
+      <Form.Select
+        value={form.category?.id ?? ""}
+        onChange={e =>
+          setForm({ ...form, category: { id: Number(e.target.value) } })
+        }
+      >
+        <option value="">-- choose --</option>
+        {categories.map(c => (
+          <option key={c.id} value={c.id}>{c.categoryName}</option>
+        ))}
+      </Form.Select>
+    </Form.Group>
+
+    <Form.Group className="mb-2">
+      <Form.Label>Tags (multi-select)</Form.Label>
+      <Form.Select
+        multiple
+        value={form.tags?.map(t => t.id) ?? []}
+        onChange={e =>
+          setForm({
+            ...form,
+            tags: [...e.target.selectedOptions].map(o => ({ id: Number(o.value) }))
+          })
+        }
+      >
+        {tags.map(t => (
+          <option key={t.id} value={t.id}>{t.tagName}</option>
+        ))}
+      </Form.Select>
+    </Form.Group>
+  </>
+)}
           </Form>
         </Modal.Body>
         <Modal.Footer>
