@@ -164,8 +164,13 @@ const save = async () => {
     );
     close();
   } catch (err) {
+  /* duplicate e-mail */
+  if (err.response?.status === 409) {
+    alert(err.response.data.error || "E-mail već postoji!");
+  } else {
     alert(err.response?.data?.error || err.response?.data?.message || "Unexpected error");
   }
+}
 };
 
   /* ----------------------------------------------------------
@@ -175,7 +180,7 @@ const save = async () => {
   const fields = {
     categories: ["categoryName", "categoryDescription"],
     events: ["title", "description", "eventDate", "location", "maxCapacity"],
-    users: ["firstName", "lastName", "email", "role", "password", "active"]
+    users: ["firstName", "lastName", "email", "role", "password"]
   };
 const toggleActive = async (id) => {
   await _axios.put(`/users/${id}/toggle`, {});

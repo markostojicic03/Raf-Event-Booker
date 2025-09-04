@@ -30,6 +30,7 @@ public class UserService {
     }
 
     public void createUser(UserModel u) {
+        ensureUniqueEmail(u, null);
         if (u.getPassword() == null || !u.getPassword().equals(u.getConfirmPassword())) {
             throw new IllegalArgumentException("Passwords do not match");
         }
@@ -40,6 +41,7 @@ public class UserService {
     public void updateUser(UserModel u) {
         UserModel existing = userRepository.findById(u.getId());
         if (existing == null) return;
+        ensureUniqueEmail(u, u.getId());
 
         if (u.getPassword() != null && !u.getPassword().isEmpty()) {
             if (!u.getPassword().equals(u.getConfirmPassword())) {
@@ -69,6 +71,7 @@ public class UserService {
     public String login(String email, String password) {
         String hashedPassword = DigestUtils.sha256Hex(password);
 
+
         System.out.println("SIFRAA: "+hashedPassword);
         return userRepository.findUserByEmail(email)
                 .filter(u -> u.getPasswordHash().equals(hashedPassword))
@@ -91,7 +94,12 @@ public class UserService {
         }
     }
     /// kraj logina
-
+    private void ensureUniqueEmail(UserModel user, Long excludeId) {
+        Optional<UserModel> existing = userRepository.findUserByEmail(user.getEmail());
+        if (existing.isPresent() && !existing.get().getId().equals(excludeId)) {
+            throw new IllegalArgumentException("E-mail već postoji!");
+        }
+    }
 
 
 }
