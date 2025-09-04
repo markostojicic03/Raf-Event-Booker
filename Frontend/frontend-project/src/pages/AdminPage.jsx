@@ -62,6 +62,11 @@ useEffect(() => {
   setSearchTerm("");
 }, [activeTab]);
 
+useEffect(() => {
+  setCurrentPage(1);     // reset pagination
+  setSearchTerm("");
+}, [activeTab]);
+
   /* ----------------------------------------------------------
      4.  CRUD HELPERS
   ---------------------------------------------------------- */
@@ -110,17 +115,10 @@ const remove = async (id) => {
 const save = async () => {
   let endpoint = "";
   let method = "post";
-if (
-  activeTab === "users" &&
-  form.password &&
-  form.password !== form.confirmPassword
-) {
-  alert("Lozinke se ne poklapaju!");
-  return;
-}
 
+  /* ---------- 1. basic endpoint & method ---------- */
   if (activeTab === "categories") endpoint = "/category";
-  else if (activeTab === "events") endpoint = "/events";
+  else if (activeTab === "events")  endpoint = "/events";
   else if (activeTab === "users")   endpoint = "/users";
 
   if (modal.item?.id) {
@@ -128,19 +126,35 @@ if (
     method = "put";
   }
 
-  // 1.  send ONLY the primitive fields
+  /* ---------- 2. build payload ---------- */
   const payload = {};
-   if (modal.item?.id) payload.id = modal.item.id; 
   fields[activeTab].forEach(f => {
+    if (f === "password") return;          // skip here, handle below
     payload[f] = form[f];
   });
 
-  // 2.  add category / tags ONLY for events
+  /* ---------- 3. relations for events ---------- */
   if (activeTab === "events") {
     payload.category = form.category;
     payload.tags     = form.tags;
   }
 
+  /* ---------- 4. password logic for users ---------- */
+  if (activeTab === "users") {
+    const pw = form.password?.trim();
+    const cp = form.confirmPassword?.trim();
+
+    if (pw || cp) {                        // admin wants to change password
+      if (pw !== cp) {
+        alert("Lozinke se ne poklapaju!");
+        return;                            // stop – don’t send
+      }
+      payload.password = pw;               // send BOTH
+      payload.confirmPassword = cp;
+    }
+  }
+
+  /* ---------- 5. send request ---------- */
   try {
     await _axios[method](endpoint, payload);
     load(
@@ -150,11 +164,7 @@ if (
     );
     close();
   } catch (err) {
-    if (err.response?.status === 409) {
-      alert(err.response.data.message);
-    } else {
-      alert("Unexpected error");
-    }
+    alert(err.response?.data?.error || err.response?.data?.message || "Unexpected error");
   }
 };
 
@@ -165,8 +175,14 @@ if (
   const fields = {
     categories: ["categoryName", "categoryDescription"],
     events: ["title", "description", "eventDate", "location", "maxCapacity"],
-    users: ["firstName", "lastName", "email", "role", "password"]
+    users: ["firstName", "lastName", "email", "role", "password", "active"]
   };
+const toggleActive = async (id) => {
+  await _axios.put(`/users/${id}/toggle`, {});
+  load("/users");
+};
+
+
 
   const paginated = data.slice((currentPage - 1) * perPage, currentPage * perPage);
 
@@ -242,6 +258,16 @@ if (
       <Button size="sm" variant="danger" onClick={() => remove(item.id)}>
         Obriši
       </Button>
+     {activeTab === "users" && (
+    <Button
+      size="sm"
+      variant={item.active ? "success" : "danger"}
+      onClick={() => toggleActive(item.id)}
+    >
+      {item.active ? "Aktivan" : "Neaktivan"}
+    </Button>
+  )}
+
     </td>
   </tr>
 ))}
@@ -249,15 +275,19 @@ if (
       </Table>
 
       {/* Pagination */}
-      {data.length > perPage && (
-        <Pagination className="justify-content-center">
-          {[...Array(Math.ceil(data.length / perPage)).keys()].map((p) => (
-            <Pagination.Item key={p + 1} active={p + 1 === currentPage} onClick={() => setCurrentPage(p + 1)}>
-              {p + 1}
-            </Pagination.Item>
-          ))}
-        </Pagination>
-      )}
+     {data.length > perPage && (
+  <Pagination className="justify-content-center">
+    {[...Array(Math.ceil(data.length / perPage)).keys()].map((p) => (
+      <Pagination.Item
+        key={p + 1}
+        active={p + 1 === currentPage}
+        onClick={() => setCurrentPage(p + 1)}
+      >
+        {p + 1}
+      </Pagination.Item>
+    ))}
+  </Pagination>
+)}
 
       {/* Modal */}
       <Modal show={modal.show} onHide={close}>

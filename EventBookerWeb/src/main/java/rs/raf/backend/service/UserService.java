@@ -72,6 +72,7 @@ public class UserService {
         System.out.println("SIFRAA: "+hashedPassword);
         return userRepository.findUserByEmail(email)
                 .filter(u -> u.getPasswordHash().equals(hashedPassword))
+                .filter(UserModel::isActive)
                 .map(u -> JWT.create()
                         .withIssuedAt(new Date())
                         .withExpiresAt(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000))

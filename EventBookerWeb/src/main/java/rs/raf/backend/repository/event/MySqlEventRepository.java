@@ -42,7 +42,11 @@ public class MySqlEventRepository implements EventRepository {
 
     @Override
     public EventModel findById(Long id) {
-        return em.find(EventModel.class, id);
+        return em.createQuery(
+                        "SELECT e FROM EventModel e JOIN FETCH e.author WHERE e.id = :id",
+                        EventModel.class)
+                .setParameter("id", id)
+                .getSingleResult();
     }
 
     @Override
@@ -73,8 +77,7 @@ public class MySqlEventRepository implements EventRepository {
                         "SELECT e FROM EventModel e ORDER BY e.createdAt DESC",
                         EventModel.class
                 )
-                .setMaxResults(limit)
-                .getResultList();
+                .getResultList();// limit cu da obrisem trenutno pa posle ako bude trebalo vratiti!!!!
     }
 
     @Override

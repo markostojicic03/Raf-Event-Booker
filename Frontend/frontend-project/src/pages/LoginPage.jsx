@@ -29,6 +29,9 @@ const handleLogin = async (e) => {
     navigate("/");
   }
 
+if (response.status === 401) setError("Korisnik je deaktiviran.");
+
+  
 
   } catch (err) {
     setError("Neispravni kredencijali");

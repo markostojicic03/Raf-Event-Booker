@@ -119,6 +119,10 @@ const voteComment = async (commentId, type) => {
     author, category, tags
   } = event;
 
+  const authorName = author
+  ? `${author.firstName} ${author.lastName}`.trim()
+  : "Nepoznat";
+
   return (
     <div className="event-details">
       <h1>{title}</h1>
@@ -131,7 +135,7 @@ const voteComment = async (commentId, type) => {
 
       <p><strong>Datum kreiranja:</strong> {new Date(createdAt).toLocaleDateString("sr-RS")}</p>
 
-      <p><strong>Autor:</strong> {author?.fullName || "Nepoznat"}</p>
+      <p><strong>Autor:</strong> {authorName}</p>
 
       <p><strong>Kategorija:</strong> {category?.categoryName || "-"}</p>
 

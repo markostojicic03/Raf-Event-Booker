@@ -72,6 +72,7 @@ public class UserResource {
     @PUT
     @Path("/{id}")
     public Response updateUser(@PathParam("id") Long id, UserModel user) {
+        user.setId(id);
         try {
             userService.updateUser(user);
             return Response.ok().build();
@@ -79,4 +80,15 @@ public class UserResource {
             return Response.status(400).entity(Map.of("error", ex.getMessage())).build();
         }
     }
+
+    @PUT
+    @Path("/{id}/toggle")
+    public Response toggleActive(@PathParam("id") Long id) {
+        UserModel u = userService.getUser(id);
+        if (u == null) return Response.status(404).build();
+        u.setActive(!u.isActive());
+        userService.updateUser(u);
+        return Response.ok().build();
+    }
+
 }
