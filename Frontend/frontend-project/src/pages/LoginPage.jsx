@@ -24,7 +24,7 @@ const handleLogin = async (e) => {
   if (data.role === "admin") {
     navigate("/admin");
   } else if (data.role === "event_creator") {
-    navigate("/events");    // or any creator dashboard
+    navigate("/creator");    // or any creator dashboard
   } else {
     navigate("/");
   }

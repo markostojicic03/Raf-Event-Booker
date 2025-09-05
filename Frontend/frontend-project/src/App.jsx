@@ -5,6 +5,7 @@ import TopReactions from './components/TopReactions';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import AdminRoute from './components/AdminRoute';
+import EventCreatorRoute from './components/EventCreatorRoute';
 
 //Lazy load stranica
 // const HomePage = lazy(() => import('./pages/HomePage'));
@@ -21,6 +22,7 @@ import EventDetails from './pages/EventDetails';
 import EventTagPage from './pages/EventTagPage';
 import LoginPage from "./pages/LoginPage";
 import AdminPage from './pages/AdminPage';
+import EventCreatorPage from './pages/EventCreatorPage';
 
 function App() {
   const [currentDate, setCurrentDate] = useState('');
@@ -60,6 +62,14 @@ function App() {
     <AdminRoute>
       <AdminPage />
     </AdminRoute>
+  }
+/>
+<Route                                                               
+  path="/creator"
+  element={
+    <EventCreatorRoute>
+      <EventCreatorPage />
+    </EventCreatorRoute>
   }
 />
             </Routes>
