@@ -46,6 +46,26 @@ useEffect(() => {
 const [likes, setLikes]       = useState(0);
 const [dislikes, setDislikes] = useState(0);
 
+const [rsvpCount, setRsvpCount] = useState(0);
+const [rsvpDisabled, setRsvpDisabled] = useState(false);
+
+useEffect(() => {
+  _axios.get(`/events/${id}/rsvp/count`).then(r => setRsvpCount(r.data));
+}, [id]);
+
+const handleRsvp = async () => {
+  const token = localStorage.getItem("jwt");
+  const email = token ? null : prompt("Unesite e-mail za prijavu:");
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  try {
+    const res = await _axios.post(`/events/${id}/rsvp`, { email }, { headers });
+    setRsvpCount(res.data.count);
+    setRsvpDisabled(true);
+  } catch (e) {
+    alert(e.response?.data?.error || "Greška");
+  }
+};
+
 // fetch current counts
 useEffect(() => {
   if (event) {
@@ -164,6 +184,21 @@ const voteComment = async (commentId, type) => {
     👎 {dislikes}
   </button>
 </p>
+{event.maxCapacity != null && event.maxCapacity > 0 && (
+  <p>
+    Prijavljeni: {rsvpCount} / {event.maxCapacity}
+    <button
+      onClick={handleRsvp}
+      disabled={
+        rsvpDisabled ||
+        rsvpCount >= event.maxCapacity ||
+        localStorage.getItem(`rsvp_${id}`)
+      }
+    >
+      {rsvpCount >= event.maxCapacity ? "Popunjeno" : "Prijavi se"}
+    </button>
+  </p>
+)}
 
       {/* COMMENT FORM */}
       <h3>Komentari ({comments.length})</h3>
