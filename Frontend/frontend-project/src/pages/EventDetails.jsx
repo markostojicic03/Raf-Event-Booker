@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import _axios from "../axiosInstance";
 import "../pages_css/EventDetailsCss.css";   // optional
@@ -16,30 +16,38 @@ export default function EventDetails() {
     _axios.get(`/events/${id}/comments`).then(res => setComments(res.data));
   }, [id]);
 
-  console.log("EventDetails rendered, id =", id);
-useEffect(() => {
-  if (!id) return;
+//  console.log("EventDetails rendered, id =", id);
+const hasViewed = useRef(false);
 
-  // single call: mark view THEN load event + comments + related
+useEffect(() => {
+  if (!id || hasViewed.current) return;
+  hasViewed.current = true;
+
+  const viewedKey = `viewed_event_${id}`;
+  if (!localStorage.getItem(viewedKey)) {
+    _axios.post(`/events/${id}/view`).then(() => {
+      localStorage.setItem(viewedKey, "1");
+    });
+  }
+
   Promise.all([
-    _axios.post(`/events/${id}/view`),          // server-side cookie decides “once”
     _axios.get(`/events/${id}`),
     _axios.get(`/events/${id}/comments`)
   ])
-  .then(([, ev, cm]) => {
-    setEvent(ev.data);
-    setComments(cm.data);
+    .then(([ev, cm]) => {
+      setEvent(ev.data);
+      setComments(cm.data);
 
-    // fetch related events that share any tag
-    if (ev.data.tags?.length) {
-      const tagIds = ev.data.tags.map(t => t.id).join(",");
-      _axios
-        .get(`/events/related?ids=${tagIds}&exclude=${id}`)
-        .then(r => setRelated(r.data.slice(0, 3)));
-    }
-  })
-  .catch(console.error);
+      if (ev.data.tags?.length) {
+        const tagIds = ev.data.tags.map(t => t.id).join(",");
+        _axios
+          .get(`/events/related?ids=${tagIds}&exclude=${id}`)
+          .then(r => setRelated(r.data.slice(0, 3)));
+      }
+    })
+    .catch(console.error);
 }, [id]);
+
 
 
 //// like/dislike
@@ -76,15 +84,22 @@ useEffect(() => {
 
 // helpers
 const vote = async (type) => {
-  const key = `event_${type}_${id}`;
-  if (localStorage.getItem(key)) return; // already voted
+  const likeKey = `event_like_${id}`;
+  const dislikeKey = `event_dislike_${id}`;
+
+  // ako je već lajkovao ili dislajkovao, zabrani dalje
+  if (localStorage.getItem(likeKey) || localStorage.getItem(dislikeKey)) return;
 
   await _axios.post(`/events/${id}/${type}`).catch(() => {});
-  localStorage.setItem(key, "1");
+
+  localStorage.setItem(type === "like" ? likeKey : dislikeKey, "1");
 
   // optimistic update
-  if (type === "like"){ setLikes(l => l + 1);}
-  else{ setDislikes(d => d + 1);}
+  if (type === "like") {
+    setLikes(l => l + 1);
+  } else {
+    setDislikes(d => d + 1);
+  }
 };
 
 // end of like/dislike
@@ -177,12 +192,19 @@ const voteComment = async (commentId, type) => {
 </p>
 
      <p>
-  <button onClick={() => vote("like")} disabled={localStorage.getItem(`event_like_${id}`)}>
-    👍 {likes}
-  </button>
-  <button onClick={() => vote("dislike")} disabled={localStorage.getItem(`event_dislike_${id}`)}>
-    👎 {dislikes}
-  </button>
+  <button 
+  onClick={() => vote("like")} 
+  disabled={localStorage.getItem(`event_like_${id}`) || localStorage.getItem(`event_dislike_${id}`)}
+>
+  👍 {likes}
+</button>
+<button 
+  onClick={() => vote("dislike")} 
+  disabled={localStorage.getItem(`event_like_${id}`) || localStorage.getItem(`event_dislike_${id}`)}
+>
+  👎 {dislikes}
+</button>
+
 </p>
 {event.maxCapacity != null && event.maxCapacity > 0 && (
   <p>
