@@ -18,7 +18,6 @@ export default function EventDetails() {
 
 //  console.log("EventDetails rendered, id =", id);
 const hasViewed = useRef(false);
-
 useEffect(() => {
   if (!id || hasViewed.current) return;
   hasViewed.current = true;
@@ -27,8 +26,13 @@ useEffect(() => {
   if (!localStorage.getItem(viewedKey)) {
     _axios.post(`/events/${id}/view`).then(() => {
       localStorage.setItem(viewedKey, "1");
-    });
+    }).catch(console.error);
   }
+}, [id]);
+
+// --- FETCH EVENT, KOMENTARA I RELATED (uvek kad se id promeni) ---
+useEffect(() => {
+  if (!id) return;
 
   Promise.all([
     _axios.get(`/events/${id}`),
@@ -42,12 +46,12 @@ useEffect(() => {
         const tagIds = ev.data.tags.map(t => t.id).join(",");
         _axios
           .get(`/events/related?ids=${tagIds}&exclude=${id}`)
-          .then(r => setRelated(r.data.slice(0, 3)));
+          .then(r => setRelated(r.data.slice(0, 3)))
+          .catch(console.error);
       }
     })
     .catch(console.error);
 }, [id]);
-
 
 
 //// like/dislike
@@ -127,11 +131,15 @@ const handleAdd = async (e) => {
 // like or dislike comment
 
 const voteComment = async (commentId, type) => {
-  const key = `comment_${type}_${commentId}`;
-  if (localStorage.getItem(key)) return;
+  const likeKey = `comment_like_${commentId}`;
+  const dislikeKey = `comment_dislike_${commentId}`;
+
+  // ako je već glasao bilo šta na ovom komentaru → stop
+  if (localStorage.getItem(likeKey) || localStorage.getItem(dislikeKey)) return;
 
   await _axios.post(`/events/comments/${commentId}/${type}`).catch(() => {});
-  localStorage.setItem(key, "1");
+
+  localStorage.setItem(type === "like" ? likeKey : dislikeKey, "1");
 
   // optimistic update
   setComments(prev =>
@@ -236,19 +244,20 @@ const voteComment = async (commentId, type) => {
             <strong>{c.author}</strong> – {new Date(c.createdAt).toLocaleString("sr-RS")}
             <p>{c.text}</p>
             <small>
-  <button
-    onClick={() => voteComment(c.id, "like")}
-    disabled={localStorage.getItem(`comment_like_${c.id}`)}
-  >
-    👍 {c.likes}
-  </button>
-  &nbsp;
-  <button
-    onClick={() => voteComment(c.id, "dislike")}
-    disabled={localStorage.getItem(`comment_dislike_${c.id}`)}
-  >
-    👎 {c.dislikes}
-  </button>
+<button
+  onClick={() => voteComment(c.id, "like")}
+  disabled={localStorage.getItem(`comment_like_${c.id}`) || localStorage.getItem(`comment_dislike_${c.id}`)}
+>
+  👍 {c.likes}
+</button>
+&nbsp;
+<button
+  onClick={() => voteComment(c.id, "dislike")}
+  disabled={localStorage.getItem(`comment_like_${c.id}`) || localStorage.getItem(`comment_dislike_${c.id}`)}
+>
+  👎 {c.dislikes}
+</button>
+
 </small>
           </div>
         ))}
