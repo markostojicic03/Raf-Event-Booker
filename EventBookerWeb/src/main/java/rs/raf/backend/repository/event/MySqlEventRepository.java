@@ -31,12 +31,15 @@ public class MySqlEventRepository implements EventRepository {
         if (querySearch == null || querySearch.isBlank()) {
             return List.of();
         }
+        String like = "%" + querySearch.trim().toLowerCase() + "%";
 
         return em.createQuery(
-                        "SELECT e FROM EventModel e " +
-                                "WHERE LOWER(e.title) LIKE LOWER(CONCAT(:prefix, '%'))",
+                        "SELECT DISTINCT e FROM EventModel e " +
+                                "WHERE LOWER(e.title)       LIKE :like " +
+                                "   OR LOWER(e.description) LIKE :like " +
+                                "ORDER BY e.createdAt DESC",
                         EventModel.class)
-                .setParameter("prefix", querySearch.trim())
+                .setParameter("like", like)
                 .getResultList();
     }
 
