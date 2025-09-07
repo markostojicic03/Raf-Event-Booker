@@ -1,56 +1,82 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import { Pagination } from "react-bootstrap";
 import _axios from "../axiosInstance";
+
+const PAGE_SIZE = 10;
 
 export default function SearchResults() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const query = searchParams.get("q")?.trim() || "";   // ?q=rock
+  const query = searchParams.get("q")?.trim() || "";
   const [events, setEvents]   = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage]       = useState(1);
 
-  console.log("Searchpage rendered, query =", query);
   useEffect(() => {
     if (!query) {
       setEvents([]);
       setLoading(false);
       return;
     }
-     
     setLoading(true);
-  _axios.get("/events/search", { params: { q: query } })
+    _axios.get("/events/search", { params: { q: query } })
       .then(res => setEvents(res.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [query]);
 
+  const totalPages = useMemo(() => Math.ceil(events.length / PAGE_SIZE), [events]);
+  const paginated  = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return events.slice(start, start + PAGE_SIZE);
+  }, [events, page]);
+
   if (loading) return <p>Učitavanje...</p>;
   if (!query)  return <p>Unesite pojam za pretragu.</p>;
   if (events.length === 0)
-    return <p>Nema događaja koji počinju na “{query}”.</p>;
+    return <p>Nema događaja koji sadrže “{query}”.</p>;
 
   return (
-    <div className="event-grid">
-      {events.map(ev => (
-        <div
-          key={ev.id}
-          className="event-card"
-          onClick={() => navigate(`/events/${ev.id}`)}
-        >
-          <h3>{ev.title}</h3>
-          <p><strong>Lokacija:</strong> {ev.location}</p>
-          <p><strong>Opis:</strong>
-            {ev.description.length > 200
-              ? `${ev.description.slice(0, 200)}…`
-              : ev.description}
-          </p>
-          <p><strong>Kategorija:</strong> {ev.category?.categoryName ?? "-"}</p>
-          <p><strong>Datum:</strong>
-            {new Date(ev.eventDate).toLocaleDateString("sr-RS")}
-          </p>
+    <>
+      <div className="event-grid">
+        {paginated.map(ev => (
+          <div
+            key={ev.id}
+            className="event-card"
+            onClick={() => navigate(`/events/${ev.id}`)}
+          >
+            <h3>{ev.title}</h3>
+            <p><strong>Lokacija:</strong> {ev.location}</p>
+            <p><strong>Opis:</strong>
+              {ev.description.length > 200
+                ? `${ev.description.slice(0, 200)}…`
+                : ev.description}
+            </p>
+            <p><strong>Kategorija:</strong> {ev.category?.categoryName ?? "-"}</p>
+            <p><strong>Datum:</strong>
+              {new Date(ev.eventDate).toLocaleDateString("sr-RS")}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center mt-4">
+          <Pagination>
+            {[...Array(totalPages)].map((_, i) => (
+              <Pagination.Item
+                key={i + 1}
+                active={i + 1 === page}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
+              </Pagination.Item>
+            ))}
+          </Pagination>
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 }
