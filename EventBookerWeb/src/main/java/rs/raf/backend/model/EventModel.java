@@ -22,28 +22,28 @@ public class EventModel {
     private Long id;
 
     @Column(nullable = false)
-    private String title; // Naslov
+    private String title;
 
     @Column(nullable = false, length = 2000)
-    private String description; // Opis
+    private String description;
 
     @Column(nullable = false)
-    private String createdAt; // Vreme kreiranja
+    private String createdAt;
 
     @Column(nullable = false)
-    private String eventDate; // Datum održavanja
+    private String eventDate;
 
     @Column(nullable = false)
-    private String location; // Lokacija
+    private String location;
 
     @Column(nullable = false)
-    private Integer views = 0; // Broj pregleda
+    private Integer views = 0;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Veza sa korisnikom koji je autor
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private UserModel author;
 
-    @ManyToMany(fetch = FetchType.LAZY /*, NO CascadeType.PERSIST */)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "event_tags",
             joinColumns        = @JoinColumn(name = "event_id"),
@@ -51,11 +51,11 @@ public class EventModel {
     )
     private Set<TagModel> tags = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY) // Veza sa kategorijom
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryModel category;
 
-    private Integer maxCapacity; // Max kapacitet (opciono)
+    private Integer maxCapacity;
 
     @Column(nullable = false)
     private Integer likes = 0;

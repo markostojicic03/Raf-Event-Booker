@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import _axios from "../axiosInstance";
-import "../pages_css/EventDetailsCss.css";   // optional
+import "../pages_css/EventDetailsCss.css";   
 
 export default function EventDetails() {
   const { id } = useParams();
@@ -11,7 +11,7 @@ export default function EventDetails() {
   const [newComment, setNewComment] = useState({ author: "", text: "" });
   const [related, setRelated]   = useState([]);
 
-  // fetch comments
+  
   useEffect(() => {
     _axios.get(`/events/${id}/comments`).then(res => setComments(res.data));
   }, [id]);
@@ -30,7 +30,7 @@ useEffect(() => {
   }
 }, [id]);
 
-// --- FETCH EVENT, KOMENTARA I RELATED (uvek kad se id promeni) ---
+
 useEffect(() => {
   if (!id) return;
 
@@ -78,7 +78,7 @@ const handleRsvp = async () => {
   }
 };
 
-// fetch current counts
+
 useEffect(() => {
   if (event) {
     setLikes(event.likes || 0);
@@ -86,7 +86,7 @@ useEffect(() => {
   }
 }, [event]);
 
-// helpers
+
 const vote = async (type) => {
   const likeKey = `event_like_${id}`;
   const dislikeKey = `event_dislike_${id}`;
@@ -98,7 +98,6 @@ const vote = async (type) => {
 
   localStorage.setItem(type === "like" ? likeKey : dislikeKey, "1");
 
-  // optimistic update
   if (type === "like") {
     setLikes(l => l + 1);
   } else {
@@ -106,9 +105,9 @@ const vote = async (type) => {
   }
 };
 
-// end of like/dislike
+// kraaaj za like/dislike
 
-  // add comment
+
 const handleAdd = async (e) => {
   e.preventDefault();
   if (!newComment.author.trim() || !newComment.text.trim()) return;
@@ -116,7 +115,7 @@ const handleAdd = async (e) => {
   const payload = {
     author: newComment.author.trim(),
     text: newComment.text.trim(),
-    createdAt: new Date().toISOString() // if backend does NOT default it
+    createdAt: new Date().toISOString() 
   };
 
   await _axios.post(`/events/${id}/comments`, payload, {
@@ -128,20 +127,20 @@ const handleAdd = async (e) => {
   setComments(data);
 };
 
-// like or dislike comment
+
 
 const voteComment = async (commentId, type) => {
   const likeKey = `comment_like_${commentId}`;
   const dislikeKey = `comment_dislike_${commentId}`;
 
-  // ako je već glasao bilo šta na ovom komentaru → stop
+  
   if (localStorage.getItem(likeKey) || localStorage.getItem(dislikeKey)) return;
 
   await _axios.post(`/events/comments/${commentId}/${type}`).catch(() => {});
 
   localStorage.setItem(type === "like" ? likeKey : dislikeKey, "1");
 
-  // optimistic update
+  
   setComments(prev =>
     prev.map(c =>
       c.id === commentId
@@ -153,7 +152,7 @@ const voteComment = async (commentId, type) => {
 
 
 
-// end of lajkovi
+
 
   if (!event) return <p className="loading">Učitavanje događaja...</p>;
 
@@ -230,14 +229,14 @@ const voteComment = async (commentId, type) => {
   </p>
 )}
 
-      {/* COMMENT FORM */}
+      {/* Formaa za komentare */}
       <h3>Komentari ({comments.length})</h3>
       <form onSubmit={handleAdd} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
         <input placeholder="Ime" value={newComment.author} onChange={e => setNewComment({...newComment, author: e.target.value})} />
         <textarea placeholder="Tekst" rows="3" value={newComment.text} onChange={e => setNewComment({...newComment, text: e.target.value})} />
         <button type="submit">Pošalji</button>
      </form>
-      {/* COMMENT LIST */}
+      {/* Lista komentara */}
       <div className="comments">
         {comments.map(c => (
           <div key={c.id} className="comment">

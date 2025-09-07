@@ -36,14 +36,14 @@ public class EventResource {
     private final CommentService commentService = new CommentService(new MySqlCommentRepository());
     private final UserService userService   = new UserService(new MySqlUserRepository());
 
-    // Vrati sve događaje
+
     @GET
     public List<EventModel> getAllEvents() {
         System.out.println("getAllEvents");
         return eventService.getAllEvents();
     }
 
-    // Vrati događaj po ID-u
+
     @GET
     @Path("/{id}")
     public EventModel getEvent(@PathParam("id") Long id) {
@@ -67,7 +67,7 @@ public class EventResource {
         final String cookieName = "view_" + id;
         boolean alreadyCounted = false;
 
-        // 1. check existing cookie
+        // ovde mogu da proverim da li vec postoji cookie
         if (request.getCookies() != null) {
             for (javax.servlet.http.Cookie c : request.getCookies()) {
                 if (cookieName.equals(c.getName())) {
@@ -77,11 +77,11 @@ public class EventResource {
             }
         }
 
-        // 2. if first visit → increment + drop cookie
+
         if (!alreadyCounted) {
-            eventService.incrementViewCount(id);   // add this method in EventService
+            eventService.incrementViewCount(id);
             javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(cookieName, "1");
-            cookie.setMaxAge(60 * 60 * 24 * 365); // 1 year
+            cookie.setMaxAge(60 * 60 * 24 * 365);
             cookie.setPath("/");
             response.addCookie(cookie);
         }
@@ -125,7 +125,7 @@ public class EventResource {
         }
 
         if (!alreadyVoted) {
-            eventService.vote(id, type);          // UPDATE event SET likes = likes + 1 …
+            eventService.vote(id, type);
             javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(cookieName, "1");
             cookie.setMaxAge(60 * 60 * 24 * 365);
             cookie.setPath("/");
@@ -138,13 +138,13 @@ public class EventResource {
         String authHeader = req.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) return null;
 
-        String token = authHeader.substring(7).trim();  // remove "Bearer "
+        String token = authHeader.substring(7).trim();
         if (token.isEmpty()) return null;
 
         try {
             return userService.getUserByEmail(JwtUtil.extractUsername(token)).orElse(null);
         } catch (JWTDecodeException e) {
-            return null;   // malformed token
+            return null;
         }
     }
 
@@ -154,7 +154,7 @@ public class EventResource {
         return eventService.getAllEventsBySearch(querySearch);
     }
 
-    // Vrati 10 najskorijih događaja
+
     @GET
     @Path("/latest")
     public List<EventModel> getLatestEvents() {
@@ -167,20 +167,20 @@ public class EventResource {
         return eventService.getMostViewedEvents(10);
     }
 
-    // Kreiraj novi događaj
+
     @POST
     public Response createEvent(EventModel dto, @Context HttpServletRequest req) {
         UserModel author = currentUser(req);
         if (author == null) return Response.status(401).build();
 
-        dto.setAuthor(author);          // always the logged-in admin
+        dto.setAuthor(author);
         dto.setCreatedAt(LocalDateTime.now().toString());
 
         EventModel created = eventService.createEvent(dto);
         return Response.status(201).entity(created).build();
     }
 
-    // Obriši događaj po ID-u
+
     @DELETE
     @Path("/{id}")
     public Response deleteEvent(@PathParam("id") Long id) {
@@ -205,14 +205,14 @@ public class EventResource {
 
 
 
-    /*  GET /events/{id}/comments  */
+
     @GET
     @Path("/{id}/comments")
     public List<CommentModel> getComments(@PathParam("id") Long eventId) {
         return commentService.getCommentsForEvent(eventId);
     }
 
-    /*  POST /events/{id}/comments  */
+
     @POST
     @Path("/{id}/comments")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -254,16 +254,16 @@ public class EventResource {
     @GET
     @Path("/related")
     public List<EventModel> getRelated(
-            @QueryParam("ids") String tagIds,          // comma-separated tag IDs
+            @QueryParam("ids") String tagIds,
             @QueryParam("exclude") Long excludeId) {
-        // split "1,2,3" -> List<Long>
+
         List<Long> ids = java.util.Arrays.stream(tagIds.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .map(Long::valueOf)
                 .collect(java.util.stream.Collectors.toList());
 
-        return eventService.findRelated(ids, excludeId, 3); // max 3
+        return eventService.findRelated(ids, excludeId, 3);
 
     }
 

@@ -66,7 +66,6 @@ public class UserService {
         return userRepository.findUserByEmail(email);
     }
 
-    //// login
 
     public String login(String email, String password) {
         String hashedPassword = DigestUtils.sha256Hex(password);

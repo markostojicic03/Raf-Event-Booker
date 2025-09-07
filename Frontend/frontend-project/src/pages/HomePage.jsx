@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Pagination } from "react-bootstrap";          // <- new
+import { Pagination } from "react-bootstrap";          
 import _axios from "../axiosInstance";
 import "../pages_css/HomePageCss.css";
 
@@ -9,10 +9,10 @@ const PAGE_SIZE = 10;
 export default function HomePage() {
   const [events, setEvents]   = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage]       = useState(1);            // 1-based
+  const [page, setPage]       = useState(1);            
   const navigate = useNavigate();
 
-  /* ----------  data load  ---------- */
+ 
   useEffect(() => {
     _axios.get("/events/latest")
       .then(res => setEvents(res.data || []))
@@ -20,14 +20,14 @@ export default function HomePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  /* ----------  role redirect  ---------- */
+ 
   useEffect(() => {
     const role = localStorage.getItem("role");
     if (role === "admin") navigate("/admin", { replace: true });
     else if (role === "event_creator") navigate("/events", { replace: true });
   }, [navigate]);
 
-  /* ----------  pagination logic  ---------- */
+
   const totalPages = useMemo(() => Math.ceil(events.length / PAGE_SIZE), [events]);
   const paginated  = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
@@ -54,7 +54,7 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* ----------  Bootstrap pagination  ---------- */}
+      {/*Bootstrap paginacija */}
       {totalPages > 1 && (
         <div className="d-flex justify-content-center mt-4">
           <Pagination>

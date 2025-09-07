@@ -7,12 +7,7 @@ import { Spinner } from 'react-bootstrap';
 import AdminRoute from './components/AdminRoute';
 import EventCreatorRoute from './components/EventCreatorRoute';
 
-//Lazy load stranica
-// const HomePage = lazy(() => import('./pages/HomePage'));
-// const PopularPage = lazy(() => import('./pages/PopularPage'));
-// const CategoryPage = lazy(() => import('./pages/CategoryPage'));
-// const SearchResults = lazy(() => import('./pages/SearchResults'));
-// const EventDetails = lazy(() => import('./pages/EventDetails'));
+
 
 import HomePage from './pages/HomePage';
 import PopularPage from './pages/PopularPage';

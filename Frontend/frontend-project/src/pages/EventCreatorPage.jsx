@@ -11,8 +11,8 @@ export default function EventCreatorPage() {
     role: localStorage.getItem("role") || "event_creator"
   });
 
-  /* --------------------  GLOBAL STATE  -------------------- */
-  const [activeTab, setActiveTab] = useState("categories"); // categories | events | search
+  
+  const [activeTab, setActiveTab] = useState("categories"); 
   const [data, setData] = useState([]);
   const [modal, setModal] = useState({ show: false, type: "", item: null });
   const [form, setForm] = useState({});
@@ -29,12 +29,12 @@ export default function EventCreatorPage() {
     _axios.get("/tag").then(res => setTags(res.data));
   }, []);
 
-  /* --------------------  AUTH CHECK  -------------------- */
+  
   useEffect(() => {
     if (user.role !== "event_creator") navigate("/login");
   }, [user.role, navigate]);
 
-  /* --------------------  DATA LOADERS  (SAME AS ADMIN)  -------------------- */
+ 
   const load = async endpoint => {
     const res = await _axios.get(endpoint);
     setData(res.data);
@@ -52,7 +52,7 @@ export default function EventCreatorPage() {
 
   useEffect(() => { setCurrentPage(1); setSearchTerm(""); }, [activeTab]);
 
-  /* --------------------  CRUD HELPERS  (SAME AS ADMIN)  -------------------- */
+  
   const open = (type, item) => {
     setModal({ show: true, type, item });
     if (!item) {
@@ -111,7 +111,7 @@ export default function EventCreatorPage() {
     }
   };
 
-  /* --------------------  JSX  -------------------- */
+
   const tabs = ["categories", "events", "search"];
   const paginated = data.slice((currentPage - 1) * perPage, currentPage * perPage);
 

@@ -53,7 +53,7 @@ public class RsvpResource {
 
         String userEmail = body.get("email");
         if (auth != null && auth.startsWith("Bearer ")) {
-            // logged-in user – use his e-mail
+
             userEmail = JwtUtil.extractUsername(auth.substring(7));
         }
         if (userEmail == null || userEmail.isBlank())

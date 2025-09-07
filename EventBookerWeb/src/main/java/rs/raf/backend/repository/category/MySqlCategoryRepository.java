@@ -45,9 +45,9 @@ public class MySqlCategoryRepository implements CategoryRepository {
     public void save(CategoryModel category) {
         em.getTransaction().begin();
         if (category.getId() == null) {
-            em.persist(category); // Kreira novi zapis
+            em.persist(category); // ovde mogu da kreiram novi zapis
         } else {
-            em.merge(category); // Ažurira postojeći
+            em.merge(category); // a ovde ako treba da azuriram postojeci
         }
         em.getTransaction().commit();
     }
@@ -60,7 +60,7 @@ public class MySqlCategoryRepository implements CategoryRepository {
                 .getSingleResult();
 
         if (eventCount > 0) {
-            return false;                // can’t delete
+            return false;
         }
 
         CategoryModel c = em.find(CategoryModel.class, id);

@@ -23,7 +23,7 @@ public class ApplicationConfig extends ResourceConfig {
         packages("rs.raf.backend");
         register(rs.raf.backend.filth.Cors.class);
 
-        // Dependency Injection
+
         register(new AbstractBinder() {
             @Override
             protected void configure() {

@@ -16,7 +16,7 @@ public class EventService {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
 
-    // Ubacuješ konkretan repo (npr. MySqlEventRepository)
+
     public EventService(EventRepository eventRepository, TagRepository tagRepository, CategoryRepository categoryRepository) {
         this.eventRepository = eventRepository;
         this.tagRepository = tagRepository;
@@ -55,14 +55,14 @@ public class EventService {
         EventModel existing = eventRepository.findById(id);
         if (existing == null) return null;
 
-        // basic fields
+
         existing.setTitle(dto.getTitle());
         existing.setDescription(dto.getDescription());
         existing.setEventDate(dto.getEventDate());
         existing.setLocation(dto.getLocation());
         existing.setMaxCapacity(dto.getMaxCapacity());
 
-        // category
+
         if (dto.getCategory() != null && dto.getCategory().getId() != null) {
             CategoryModel cat =
                     categoryRepository.findById(dto.getCategory().getId());
@@ -70,7 +70,7 @@ public class EventService {
             existing.setCategory(cat);
         }
 
-        // tags
+
         if (dto.getTags() != null) {
             Set<Long> tagIds = dto.getTags()
                     .stream()
@@ -104,7 +104,7 @@ public class EventService {
         EventModel e = eventRepository.findById(id);
         if (e != null) {
             e.setViews(e.getViews() + 1);
-            eventRepository.save(e);   // merge
+            eventRepository.save(e);
         }
     }
 

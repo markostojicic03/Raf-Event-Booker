@@ -47,7 +47,6 @@ public class CategoryResource {
 
     @POST
     public Response createCategory(CategoryModel dto) {
-        // already exists?
         if (categoryService.existsByNameIgnoreCase(dto.getCategoryName())) {
             Map<String, String> m = Map.of("message", "Category with this name already exists");
             return Response.status(Response.Status.CONFLICT).entity(m).build();
@@ -65,7 +64,7 @@ public class CategoryResource {
 
         existing.setCategoryName(dto.getCategoryName());
         existing.setCategoryDescription(dto.getCategoryDescription());
-        categoryService.updateCategory(id, existing);          // JPA/Spring automatically flushes
+        categoryService.updateCategory(id, existing);
         return existing;
     }
 

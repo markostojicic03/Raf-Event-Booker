@@ -1,4 +1,4 @@
-// src/pages/LoginPage.jsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import _axios from "../axiosInstance";
@@ -17,14 +17,14 @@ const handleLogin = async (e) => {
       username: email,
       password
     });
-    localStorage.setItem("jwt", data.jwt);   // backend returns { "jwt": "..." }
+    localStorage.setItem("jwt", data.jwt);   
     localStorage.setItem('role', data.role); 
     
-  // Redirect based on role
+
   if (data.role === "admin") {
     navigate("/admin");
   } else if (data.role === "event_creator") {
-    navigate("/creator");    // or any creator dashboard
+    navigate("/creator");    
   } else {
     navigate("/");
   }

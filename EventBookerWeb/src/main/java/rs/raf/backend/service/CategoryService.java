@@ -34,7 +34,7 @@ public class CategoryService {
             existing.setCategoryDescription(updatedCategory.getCategoryDescription());
             categoryRepository.save(existing);
         }
-        return null; // ili baci exception
+        return null;
     }
 
     public boolean deleteCategory(Long id) {

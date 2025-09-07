@@ -39,9 +39,9 @@ public class MySqlTagRepository implements TagRepository {
     public void save(TagModel tag) {
         em.getTransaction().begin();
         if (tag.getId() == null) {
-            em.persist(tag); // Kreira novi zapis
+            em.persist(tag);
         } else {
-            em.merge(tag); // Ažurira postojeći
+            em.merge(tag);
         }
         em.getTransaction().commit();
     }

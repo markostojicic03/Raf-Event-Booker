@@ -11,10 +11,8 @@ export default function AdminPage() {
     role: localStorage.getItem("role") || "admin"
   });
 
-  /* ----------------------------------------------------------
-     1.  GLOBAL STATE
-  ---------------------------------------------------------- */
-  const [activeTab, setActiveTab] = useState("categories"); // categories | events | users
+ 
+  const [activeTab, setActiveTab] = useState("categories"); 
   const [data, setData] = useState([]);
   const [modal, setModal] = useState({ show: false, type: "", item: null });
   const [form, setForm] = useState({});
@@ -31,16 +29,12 @@ useEffect(() => {
   _axios.get("/category").then(res => setCategories(res.data));
   _axios.get("/tag")    .then(res => setTags(res.data));
 }, []);
-  /* ----------------------------------------------------------
-     2.  AUTH CHECK
-  ---------------------------------------------------------- */
+
   useEffect(() => {
     if (user.role !== "admin") navigate("/login");
   }, [user.role, navigate]);
 
-  /* ----------------------------------------------------------
-     3.  DATA LOADERS
-  ---------------------------------------------------------- */
+
   const load = async (endpoint) => {
     const res = await _axios.get(endpoint);
     setData(res.data);
@@ -63,21 +57,19 @@ useEffect(() => {
 }, [activeTab]);
 
 useEffect(() => {
-  setCurrentPage(1);     // reset pagination
+  setCurrentPage(1);     //ovde resetujem paginaciju na prvu stranu
   setSearchTerm("");
 }, [activeTab]);
 
-  /* ----------------------------------------------------------
-     4.  CRUD HELPERS
-  ---------------------------------------------------------- */
+
  const open = (type, item) => {
   setModal({ show: true, type, item });
 
   if (!item) {
-    // ADD – empty form
+   
     setForm({});
   } else {
-    // EDIT – pre-fill
+   
     setForm({
       ...item,
       category: item.category ? { id: item.category.id } : null,
@@ -116,7 +108,7 @@ const save = async () => {
   let endpoint = "";
   let method = "post";
 
-  /* ---------- 1. basic endpoint & method ---------- */
+ 
   if (activeTab === "categories") endpoint = "/category";
   else if (activeTab === "events")  endpoint = "/events";
   else if (activeTab === "users")   endpoint = "/users";
@@ -126,35 +118,35 @@ const save = async () => {
     method = "put";
   }
 
-  /* ---------- 2. build payload ---------- */
+ 
   const payload = {};
   fields[activeTab].forEach(f => {
-    if (f === "password") return;          // skip here, handle below
+    if (f === "password") return;          
     payload[f] = form[f];
   });
 
-  /* ---------- 3. relations for events ---------- */
+
   if (activeTab === "events") {
     payload.category = form.category;
     payload.tags     = form.tags;
   }
 
-  /* ---------- 4. password logic for users ---------- */
+  
   if (activeTab === "users") {
     const pw = form.password?.trim();
     const cp = form.confirmPassword?.trim();
 
-    if (pw || cp) {                        // admin wants to change password
+    if (pw || cp) {                        
       if (pw !== cp) {
         alert("Lozinke se ne poklapaju!");
-        return;                            // stop – don’t send
+        return;                            
       }
-      payload.password = pw;               // send BOTH
+      payload.password = pw;              
       payload.confirmPassword = cp;
     }
   }
 
-  /* ---------- 5. send request ---------- */
+  
   try {
     await _axios[method](endpoint, payload);
     load(
@@ -164,7 +156,7 @@ const save = async () => {
     );
     close();
   } catch (err) {
-  /* duplicate e-mail */
+  
   if (err.response?.status === 409) {
     alert(err.response.data.error || "E-mail već postoji!");
   } else {
@@ -173,9 +165,7 @@ const save = async () => {
 }
 };
 
-  /* ----------------------------------------------------------
-     5.  JSX
-  ---------------------------------------------------------- */
+
   const tabs = ["categories", "events", "users"];
   const fields = {
     categories: ["categoryName", "categoryDescription"],
@@ -202,7 +192,7 @@ const toggleActive = async (id) => {
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* Tabovi */}
       <div style={{ marginBottom: "1rem" }}>
         {tabs.map((t) => (
           <Button key={t} active={activeTab === t} onClick={() => setActiveTab(t)} className="me-2">
@@ -211,7 +201,7 @@ const toggleActive = async (id) => {
         ))}
       </div>
 
-      {/* Add button */}
+      {/* Dugme add */}
       <Button variant="primary" onClick={() => open(activeTab, null)} className="mb-3">
         Dodaj novu kategoriju/event/usera 
       </Button>
@@ -229,7 +219,7 @@ const toggleActive = async (id) => {
   </div>
 )}
 
-      {/* Table */}
+      {/* Tabela */}
       <Table striped bordered hover responsive>
         <thead>
           <tr>
@@ -279,7 +269,7 @@ const toggleActive = async (id) => {
         </tbody>
       </Table>
 
-      {/* Pagination */}
+      {/* Paginacija */}
      {data.length > perPage && (
   <Pagination className="justify-content-center">
     {[...Array(Math.ceil(data.length / perPage)).keys()].map((p) => (
@@ -318,7 +308,7 @@ const toggleActive = async (id) => {
               </Form.Group>
               
             ))}
-          {/* DODANOOOOOOOOOO*/}
+          {/* DODAAO NAKNADNOO*/}
 {activeTab === "events" && (
   <>
     <Form.Group className="mb-2">
@@ -365,7 +355,7 @@ const toggleActive = async (id) => {
   </>
 )}
 
-{/* 👇  NEW – confirm password for users only */}
+{/* Ovde je confirm password (mora da se poklopeee) */}
 {activeTab === "users" && (
   <Form.Group className="mb-2">
     <Form.Label>Confirm password</Form.Label>

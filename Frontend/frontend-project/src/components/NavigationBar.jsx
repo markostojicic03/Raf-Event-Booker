@@ -9,9 +9,9 @@ const NavigationBar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState([]);
 
-  // fetch categories once on mount
+  
   useEffect(() => {
-    _axios.get('/category')          // <-- your endpoint
+    _axios.get('/category')         
       .then(res => setCategories(res.data))
       .catch(console.error);
   }, []);
@@ -34,7 +34,7 @@ const NavigationBar = () => {
             <Nav.Link as={Link} to="/" className={location.pathname === "/" ? "active" : ""}>Početna</Nav.Link>
             <Nav.Link as={Link} to="/popular" className={location.pathname === "/popular" ? "active" : ""}>Najposećeniji</Nav.Link>
 
-            {/* Dynamic category dropdown */}
+            {/* Ovde sam stavio dropdown za kategorije */}
             <NavDropdown title="Kategorije" id="category-dropdown">
               {categories.map(cat => (
                 <NavDropdown.Item
@@ -49,7 +49,7 @@ const NavigationBar = () => {
         
           </Nav>
 
-            {/* Login button – flush right */}
+            {/* Login dugme */}
   <Nav>
     <Button
   as={Link}

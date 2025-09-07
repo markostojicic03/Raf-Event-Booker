@@ -1,6 +1,6 @@
-/* 1️⃣  Main wrapper – stretches to fill available height */
+
 .main-content {
-  flex: 1 0 auto;        /* pushes footer down */
+  flex: 1 0 auto;        
   padding: 40px 20px;
   text-align: center;
   display: flex;
@@ -8,7 +8,7 @@
   align-items: center;
 }
 
-/* 2️⃣  Navbar – full-width dark bar, items centered */
+
 .navbar {
   width: 100%;
   background: #343a40;
@@ -27,7 +27,7 @@
   gap: 20px;
 }
 
-/* 3️⃣  Footer – pinned to bottom */
+
 .footer {
   flex-shrink: 0;
   background-color: #f8f8f8;
@@ -37,13 +37,13 @@
   text-align: center;
 }
 
-/* 4️⃣  Responsive grid for event cards */
+
 .event-grid {
-  display: flex;              /* 1️⃣ flex instead of grid */
-  flex-direction: column;     /* 2️⃣ stack vertically */
-  gap: 24px;                  /* keeps the spacing */
+  display: flex;              
+  flex-direction: column;    
+  gap: 24px;                  
   width: 100%;
-  max-width: 800px;           /* optional – limits width on large screens */
+  max-width: 800px;          
   margin: 0 auto;
 }
 

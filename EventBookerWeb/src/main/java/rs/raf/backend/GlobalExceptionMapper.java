@@ -10,7 +10,7 @@ import java.util.Map;
 public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
     @Override
     public Response toResponse(Exception ex) {
-        ex.printStackTrace();               // console
+        ex.printStackTrace();
         return Response.status(500)
                 .entity(Map.of("error", ex.getMessage()))
                 .build();

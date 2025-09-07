@@ -32,7 +32,7 @@ public class TagService {
             existing.setTagName(updatedTag.getTagName());
             tagRepository.save(existing);
         }
-        return null; // ili baci exception
+        return null;
     }
 
     public boolean deleteTag(Long id) {
